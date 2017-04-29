@@ -4,17 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 /**
  * Created by Admin on 22.04.2017.
  */
 @Entity
-public class Users {
+@Table(name = "users")
+public class User {
 
     @Id
     @Size(min=1)
@@ -30,6 +29,12 @@ public class Users {
     @NotBlank
     @Size(min=1)
     @Column(name = "password", nullable = false, insertable = true, updatable = true)
-    private String password;
-    private String matchingPassword;
+    @Setter @Getter private String password;
+
+    @Transient
+    private String passwordConfirm;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "roles", referencedColumnName = "id")
+    @Getter @Setter private Set<UserRole> userRoles;
 }

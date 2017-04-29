@@ -1,4 +1,4 @@
-package dao.dal;
+package dao.repository;
 
 import dao.entities.Currency;
 import dao.entities.Rate;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Repository
 @Scope(scopeName = "singleton")
-public class CurrencyDal {
+public class CurrencyRepository {
 
     @PersistenceContext
     private EntityManager em;

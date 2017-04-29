@@ -11,6 +11,7 @@ import java.util.List;
  * Created by Admin on 22.04.2017.
  */
 @Entity
+@Table(name = "Deposites")
 public class Deposites {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DepositesSeq")

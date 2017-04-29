@@ -10,6 +10,7 @@ import java.util.Date;
  * Created by Admin on 22.04.2017.
  */
 @Entity
+@Table(name = "replenishment")
 public class Replenishment {
 
     @Id

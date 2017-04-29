@@ -10,6 +10,7 @@ import java.util.List;
  * Created by Admin on 22.04.2017.
  */
 @Entity
+@Table(name = "Common")
 public class Common {
 
     @Id
@@ -24,5 +25,5 @@ public class Common {
 
     @OneToOne
     @JoinColumn(name = "name", referencedColumnName = "name")
-    @Setter @Getter private Users user;
+    @Setter @Getter private User user;
 }

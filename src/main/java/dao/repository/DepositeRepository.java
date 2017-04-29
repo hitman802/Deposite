@@ -1,4 +1,4 @@
-package dao.dal;
+package dao.repository;
 
 import dao.entities.Currency;
 import dao.entities.Deposites;
@@ -18,7 +18,7 @@ import java.util.Date;
 @Log4j
 @Repository
 @Scope(scopeName = "singleton")
-public class DepositeDal {
+public class DepositeRepository {
 
     @PersistenceContext
     private EntityManager em;

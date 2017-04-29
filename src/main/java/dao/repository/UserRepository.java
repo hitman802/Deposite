@@ -1,6 +1,6 @@
-package dao.dal;
+package dao.repository;
 
-import dao.entities.Users;
+import dao.entities.User;
 import lombok.extern.log4j.Log4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -16,14 +16,14 @@ import javax.persistence.PersistenceContext;
 @Log4j
 @Repository
 @Scope(scopeName = "singleton")
-public class UsersDal {
+public class UserRepository {
 
     @PersistenceContext
     private EntityManager em;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Users findUser(String name) {
-        Users user = em.find(Users.class, name);
+    public User loadUserByName(String name) {
+        User user = em.find(User.class, name);
         if( user == null ) {
             log.error("Cant find user by id " + name);
         }
@@ -31,16 +31,25 @@ public class UsersDal {
     }
 
     @Transactional
-    public void addDeposite(String name, String email, String additional) {
-        Users user = createUsers(name, email, additional);
+    public void addUser(String name, String email) {
+        User user = createUser(name, email);
         em.persist(user);
     }
 
-    public Users createUsers(String name, String email, String additional) {
-        Users user = new Users();
+    @Transactional
+    public void removeUserByName(String name) {
+        User user = loadUserByName(name);
+        if( user == null ) {
+            log.error("Cant find user to delete it username" + name);
+            return;
+        }
+        em.remove(user);
+    }
+
+    private User createUser(String name, String email) {
+        User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setAdditional(additional);
         return user;
     }
 }

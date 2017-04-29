@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by Admin on 22.04.2017.
  */
 @Entity
-@Table(name = "Rates")
+@Table(name = "rates")
 public class Rate {
 
     @Id

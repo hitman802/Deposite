@@ -7,6 +7,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
@@ -20,9 +22,9 @@ import java.util.concurrent.ScheduledExecutorService;
 @PropertySources({
         @PropertySource("classpath:properties.props"),
 })
-@ComponentScan({"initializer", "periodical", "dao.dal", "factory"})
+@ComponentScan({"initializer", "periodical", "dao.repository", "factory", "dao.services", "controllers"})
 @EnableTransactionManagement
-public class AppConfiguration {
+public class AppConfig {
 
     //to read property files
     @Bean
@@ -63,5 +65,15 @@ public class AppConfiguration {
         JpaTransactionManager jpa = new JpaTransactionManager();
         jpa.setDataSource(dataSource());
         return jpa;
+    }
+
+    @Bean
+    public InternalResourceViewResolver viewResolver() {
+        InternalResourceViewResolver viewResolver
+                = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/WEB-INF/jsp/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
     }
 }

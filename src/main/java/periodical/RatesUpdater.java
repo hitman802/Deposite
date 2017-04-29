@@ -3,8 +3,10 @@ package periodical;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dao.dal.CurrencyDal;
-import dao.dal.RatesDal;
+import dao.entities.RateSource;
+import dao.repository.CurrencyRepository;
+import dao.repository.RateSourceRepository;
+import dao.repository.RatesRepository;
 import dao.entities.Rate;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -34,9 +36,11 @@ import java.util.stream.Collectors;
 public class RatesUpdater implements Runnable {
 
     @Autowired
-    private CurrencyDal currencyDal;
+    private CurrencyRepository currencyRepository;
     @Autowired
-    private RatesDal ratesDal;
+    private RatesRepository ratesRepository;
+    @Autowired
+    private RateSourceRepository rateSourceRepository;
 
     @Value("${ratesUpdateInterval}")
     private long interval;
@@ -62,8 +66,9 @@ public class RatesUpdater implements Runnable {
                     .stream()
                     .filter(a-> (a.getName() != null && !a.getName().trim().isEmpty()))
                     .collect(Collectors.toList());
-            currencyDal.checkAndUpdateCurrencies(rates);
-            ratesDal.updateRates(rates);
+            currencyRepository.checkAndUpdateCurrencies(rates);
+            RateSource rateSource = rateSourceRepository.updateSource("NBY");
+            ratesRepository.updateRates(rates, rateSource);
 
             log.info("Update rates finished");
         } catch(Exception e) {
