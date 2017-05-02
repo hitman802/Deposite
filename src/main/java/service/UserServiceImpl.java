@@ -4,6 +4,7 @@ import dao.entities.Users;
 import dao.entities.Role;
 import dao.repositories.RoleRepository;
 import dao.repositories.UserRepository;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;

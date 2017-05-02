@@ -78,6 +78,6 @@ ALTER TABLE Replenishment
   ADD FOREIGN KEY (replenishment_deposite) REFERENCES Deposite(deposite_id)
 ;
 INSERT INTO Role (role_name) VALUES
-  ('ADMIN'),
-  ('USER')
+  ('ROLE_ADMIN'),
+  ('ROLE_USER')
 ;
