@@ -11,34 +11,14 @@ import javax.validation.constraints.Size;
  * Created by Admin on 22.04.2017.
  */
 @Entity
-@Table(name = "currency")
+@Table(name = "Currency")
 public class Currency {
-
     @Id
-    @Size(min=1)
-    @Column(name = "name", nullable = false, insertable = true, updatable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "currency_id")
+    @Getter @Setter private long id;
+
     @NotBlank
-    @Setter @Getter private String id;
-
-    @Override
-    public String toString() {
-        return "Currency{" +
-                "id='" + id + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Currency currency = (Currency) o;
-
-        return id.equals(currency.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
+    @Column(name = "currency_name", nullable = false, unique = true)
+    @Setter @Getter private String name;
 }

@@ -1,8 +1,8 @@
-package dao.services;
+package service;
 
-import dao.entities.UserRole;
-import dao.entities.User;
-import dao.repository.UserRepository;
+import dao.entities.Role;
+import dao.entities.Users;
+import dao.repositories.UserRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -29,16 +29,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
-        User user = userRepository.loadUserByName(username);
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException, DataAccessException {
+        Users user = userRepository.loadUserByName(name);
         if( user == null ) {
-            log.error("Cant load user by name " + username);
-            throw new UsernameNotFoundException("Cant load user by name " + username);
+            log.error("Cant load user by name " + name);
+            throw new UsernameNotFoundException("Cant load user by name " + name);
         }
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for (UserRole userRole : user.getUserRoles()){
-            grantedAuthorities.add(new SimpleGrantedAuthority(userRole.getName()));
-        }
+        user.getRoles().forEach(role -> {
+            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+        });
         return new org.springframework.security.core.
                 userdetails.User(user.getName(), user.getPassword(), grantedAuthorities);
     }

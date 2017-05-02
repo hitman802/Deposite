@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 /**
@@ -18,9 +15,12 @@ import javax.validation.constraints.Size;
 public class RateSource {
 
     @Id
-    @Size(min=1)
-    @Column(name = "name", nullable = false, insertable = true, updatable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ratesource_id")
+    @Getter @Setter private long id;
+
     @NotBlank
+    @Column(name = "ratesource_name", nullable = false, unique = true)
     @Setter @Getter private String name;
 
 }

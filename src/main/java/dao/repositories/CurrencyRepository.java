@@ -1,15 +1,17 @@
-package dao.repository;
+package dao.repositories;
 
 import dao.entities.Currency;
 import dao.entities.Rate;
 import factory.CurrencyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
@@ -29,23 +31,24 @@ public class CurrencyRepository {
     public void checkAndUpdateCurrencies(List<Rate> rates) {
         rates.forEach(k -> {
             String name = k.getName();
-            Currency currency = getCurrencyById(name);
+            Currency currency = getCurrencyByName(name);
             if( currency == null ) {
                 currency = currencyFactory.create();
-                currency.setId(name);
+                currency.setName(name);
                 em.persist(currency);
             }
         });
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Currency getCurrencyById(String id) {
-        return em.find(Currency.class, id);
-    }
-
-    private boolean isValidCurrency(Currency currency) {
-        boolean notNullId = currency.getId() != null;
-        boolean notEmptyId = notNullId && !currency.getId().isEmpty();
-        return notEmptyId;
+    public Currency getCurrencyByName(String name) {
+        try {
+            return (Currency) em.createQuery(
+                    "SELECT c from Currency c WHERE c.name = :currencyName")
+                    .setParameter("currencyName", name)
+                    .getSingleResult();
+        } catch(NoResultException e) {
+            return null;
+        }
     }
 }

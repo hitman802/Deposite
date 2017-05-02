@@ -1,16 +1,16 @@
 package controllers;
 
-import org.springframework.beans.factory.annotation.Value;
+import dao.entities.Users;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.Map;
+import org.springframework.web.bind.annotation.RequestMethod;
+import service.interfaces.ISecurityService;
+import service.interfaces.IUserService;
+import validation.UserValidator;
 
 /**
  * Created by Admin on 29.04.2017.
@@ -18,25 +18,51 @@ import java.util.Map;
 @Controller
 public class UserController {
 
-    @RequestMapping({"/login"})
-    public String index() {
+    @Autowired
+    private IUserService userService;
+
+    @Autowired
+    private ISecurityService securityService;
+
+    @Autowired
+    private UserValidator userValidator;
+
+    @RequestMapping(value = "/registration", method = RequestMethod.GET)
+    public String registration(Model model) {
+        model.addAttribute("userForm", new Users());
+
+        return "registration";
+    }
+
+    @RequestMapping(value = "/registration", method = RequestMethod.POST)
+    public String registration(@ModelAttribute("userForm") Users userForm, BindingResult bindingResult, Model model) {
+        userValidator.validate(userForm, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            return "registration";
+        }
+
+        userService.save(userForm);
+
+        securityService.autologin(userForm.getName(), userForm.getPasswordConfirm());
+
+        return "redirect:/welcome";
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login(Model model, String error, String logout) {
+        if (error != null)
+            model.addAttribute("error", "Your username and password is invalid.");
+
+        if (logout != null)
+            model.addAttribute("message", "You have been logged out successfully.");
+
         return "login";
     }
 
-    @RequestMapping("/register")
-    public ModelAndView register(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("register");
-        return mav;
-    }
-
-    @Value("${application.message:Hello World}")
-    private String message = "Hello World";
-
-    @GetMapping("/")
-    public String welcome(Map<String, Object> model) {
-        model.put("time", new Date());
-        model.put("message", this.message);
+    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
+    public String welcome(Model model) {
         return "welcome";
     }
+
 }

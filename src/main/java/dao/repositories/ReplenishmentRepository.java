@@ -1,4 +1,4 @@
-package dao.repository;
+package dao.repositories;
 
 import dao.entities.Currency;
 import dao.entities.Replenishment;

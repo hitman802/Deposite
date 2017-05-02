@@ -1,7 +1,7 @@
-package dao.repository;
+package dao.repositories;
 
 import dao.entities.Currency;
-import dao.entities.Deposites;
+import dao.entities.Deposite;
 import lombok.extern.log4j.Log4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -24,30 +24,30 @@ public class DepositeRepository {
     private EntityManager em;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Deposites findDeposite(Long id) {
-        Deposites deposites = em.find(Deposites.class, id);
-        if( deposites == null ) {
+    public Deposite findDeposite(Long id) {
+        Deposite deposite = em.find(Deposite.class, id);
+        if( deposite == null ) {
             log.error("Cant find deposites by id " + id);
         }
-        return deposites;
+        return deposite;
     }
 
     @Transactional
     public void addDeposite(Currency currency, Date startDate, Date endDate,
                             double depositeRate, double taxOnPercents) {
-        Deposites deposites = createDeposites(currency, startDate,
+        Deposite deposite = createDeposites(currency, startDate,
                 endDate, depositeRate, taxOnPercents);
-        em.persist(deposites);
+        em.persist(deposite);
     }
 
-    public Deposites createDeposites(Currency currency, Date startDate, Date endDate,
-                                     double depositeRate, double taxOnPercents) {
-        Deposites deposites = new Deposites();
-        deposites.setCurrency(currency);
-        deposites.setStartDate(startDate);
-        deposites.setEndDate(endDate);
-        deposites.setDepositeRate(depositeRate);
-        deposites.setTaxOnPersents(taxOnPercents);
-        return deposites;
+    public Deposite createDeposites(Currency currency, Date startDate, Date endDate,
+                                    double depositeRate, double taxOnPercents) {
+        Deposite deposite = new Deposite();
+        deposite.setCurrency(currency);
+        deposite.setStartDate(startDate);
+        deposite.setEndDate(endDate);
+        deposite.setDepositeRate(depositeRate);
+        deposite.setTaxOnPercents(taxOnPercents);
+        return deposite;
     }
 }

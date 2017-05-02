@@ -1,6 +1,5 @@
-package dao.repository;
+package dao.repositories;
 
-import dao.entities.Rate;
 import dao.entities.RateSource;
 import factory.RateSourceFactory;
 import lombok.extern.log4j.Log4j;
@@ -11,8 +10,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Admin on 22.04.2017.
@@ -29,7 +29,7 @@ public class RateSourceRepository {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public RateSource updateSource(String sourceName) {
-        RateSource rateSource = findSource(sourceName);
+        RateSource rateSource = findSourceByName(sourceName);
         if( rateSource == null ) {
             rateSource = rateSourceFactory.create();
             rateSource.setName(sourceName);
@@ -39,12 +39,16 @@ public class RateSourceRepository {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public RateSource findSource(String name) {
-        RateSource rs = em.find(RateSource.class, name);
-        if( rs == null ) {
-            log.error("Cant find rate source by id " + name);
+    public RateSource findSourceByName(String name) {
+
+        try {
+            return (RateSource) em.createQuery(
+                    "SELECT c FROM RateSource c WHERE c.name = :rateSourceName")
+                    .setParameter("rateSourceName", name)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
-        return rs;
     }
 
     @Transactional

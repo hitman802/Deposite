@@ -22,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @PropertySources({
         @PropertySource("classpath:properties.props"),
 })
-@ComponentScan({"initializer", "periodical", "dao.repository", "factory", "dao.services", "controllers"})
+@ComponentScan({"initializer", "periodical", "dao", "factory", "service", "controllers", "validation"})
 @EnableTransactionManagement
 public class AppConfig {
 
@@ -76,4 +76,5 @@ public class AppConfig {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
+
 }
