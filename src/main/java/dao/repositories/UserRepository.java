@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * Created by Admin on 22.04.2017.
@@ -26,6 +27,13 @@ public class UserRepository {
     @Transactional(propagation = Propagation.REQUIRED)
     public Users loadUserByName(String name) {
         return findUserByName(name);
+    }
+
+    @Transactional
+    public List<Users> loadAllUsers() {
+        return em.createQuery( "SELECT c FROM Users c")
+                .getResultList()
+                ;
     }
 
     @Transactional
