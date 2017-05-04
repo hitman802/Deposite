@@ -16,7 +16,7 @@ import validation.UserValidator;
  * Created by Admin on 29.04.2017.
  */
 @Controller
-public class UserController {
+public class LoginController {
 
     @Autowired
     private IUserService userService;

@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
     <meta charset="utf-8">
@@ -47,20 +48,19 @@
                 </thead>
                 <tbody>
                     <c:forEach items="${users}" var="user">
-                        <tr>
+                        <tr id="row_${user.id}">
                             <td>${user.id}</td>
                             <td>${user.name}</td>
                             <td>${user.password}</td>
                             <td>${user.email}</td>
                             <td>
                                 <c:forEach items="${user.roles}" var="role" varStatus="status">
-
                                     <c:out value="${fn:toUpperCase(fn:substring(role.name,5,6))}${fn:toLowerCase(fn:substring(role.name,6,fn:length(role.name)))}"/>
                                     <c:if test="${!status.last}">,</c:if>
                                 </c:forEach>
                             </td>
                             <td>
-                                <a href="user.html"><i class="glyphicon glyphicon-pencil"></i></a>
+                                <a href="#" onclick='changeUserRow(${user.id})'><i class="glyphicon glyphicon-pencil"></i></a>
                                 <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>
                             </td>
                         </tr>
@@ -92,6 +92,51 @@
                 <button class="btn btn-danger" data-dismiss="modal">Delete</button>
             </div>
         </div>
-
     </body>
+
 </html>
+<script type="text/javascript">
+    function changeUserRow(pid)
+    {
+        var element = document.getElementById("row_"+pid);
+        element.outerHTML =
+        '<form:form method="POST" modelAttribute="userForm" action="admin/user/update">'
+            + '<tr>'+
+                + '<td>'
+                    + '<div class="form-group">'
+                        + '<form:input type="text" class="form-control" path="id" disabled="true"/>'
+                    + '</div>'
+                + '</td>'
+                + '<td>'
+                    + '<div class="form-group">'
+                        + '<form:input type="text" class="form-control" path="name"/>'
+                    + '</div>'
+                + '</td>'
+                + '<td>'
+                    + '<div class="form-group">'
+                        + '<form:input type="text" class="form-control" path="password" disabled="true"/>'
+                    + '</div>'
+                + '</td>'
+                + '<td>'
+                    + '<div class="form-group">
+                        + '<form:input type="text" class="form-control" path="email"/>'
+                    + '</div>'
+                + '</td>'
+                + '<td>'
+                    + '<div class="form-group">'
+                        + '<c:forEach items="${allRoles}" var="role">'
+                        + '<c:set var="roleFromDB" value="${fn:toUpperCase(fn:substring(role.name,5,6))}${fn:toLowerCase(fn:substring(role.name,6,fn:length(role.name)))}"/>'
+                            + '<div class="checkbox">'
+                                + '<label><input type="checkbox" value="${roleFromDB}" >${roleFromDB}</label>'
+                                + '</div>'
+                        + '</c:forEach>'
+                        + '<!-- <form:input type="text" class="form-control" path="roles"/> -->'
+                    + '</div>'
+                + '</td>'
+                + '<td>'
+                    + '<button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>'
+                    + '</td>'
+            + '</tr>'
+        + '</form:form>'
+    }
+</script>

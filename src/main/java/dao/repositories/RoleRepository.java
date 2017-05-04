@@ -57,7 +57,7 @@ public class RoleRepository {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Collection<Role> findAll() {
+    public Collection<Role> loadAll() {
         Query query = em.createQuery("SELECT e FROM Role e");
         return (Collection<Role>) query.getResultList();
     }

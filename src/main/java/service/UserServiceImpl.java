@@ -1,10 +1,8 @@
 package service;
 
 import dao.entities.Users;
-import dao.entities.Role;
 import dao.repositories.RoleRepository;
 import dao.repositories.UserRepository;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void save(Users user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRoles(new HashSet<>(roleRepository.findAll()));
+        user.setRoles(new HashSet<>(roleRepository.loadAll()));
         userRepository.saveUser(user);
     }
 
