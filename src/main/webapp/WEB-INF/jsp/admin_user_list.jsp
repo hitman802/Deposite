@@ -60,7 +60,7 @@
                                 </c:forEach>
                             </td>
                             <td>
-                                <a href="#" onclick='changeUserRow(${user.id})'><i class="glyphicon glyphicon-pencil"></i></a>
+                                <a href="#" onclick='changeUserRow(${user.id},"${user.name}","${user.password}","${user.email}")'><i class="glyphicon glyphicon-pencil"></i></a>
                                 <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>
                             </td>
                         </tr>
@@ -96,47 +96,13 @@
 
 </html>
 <script type="text/javascript">
-    function changeUserRow(pid)
+    function changeUserRow(id,name,password,email)
     {
-        var element = document.getElementById("row_"+pid);
+        var element = document.getElementById("row_"+id);
         element.outerHTML =
-        '<form:form method="POST" modelAttribute="userForm" action="admin/user/update">'
-            + '<tr>'+
-                + '<td>'
-                    + '<div class="form-group">'
-                        + '<form:input type="text" class="form-control" path="id" disabled="true"/>'
-                    + '</div>'
-                + '</td>'
-                + '<td>'
-                    + '<div class="form-group">'
-                        + '<form:input type="text" class="form-control" path="name"/>'
-                    + '</div>'
-                + '</td>'
-                + '<td>'
-                    + '<div class="form-group">'
-                        + '<form:input type="text" class="form-control" path="password" disabled="true"/>'
-                    + '</div>'
-                + '</td>'
-                + '<td>'
-                    + '<div class="form-group">
-                        + '<form:input type="text" class="form-control" path="email"/>'
-                    + '</div>'
-                + '</td>'
-                + '<td>'
-                    + '<div class="form-group">'
-                        + '<c:forEach items="${allRoles}" var="role">'
-                        + '<c:set var="roleFromDB" value="${fn:toUpperCase(fn:substring(role.name,5,6))}${fn:toLowerCase(fn:substring(role.name,6,fn:length(role.name)))}"/>'
-                            + '<div class="checkbox">'
-                                + '<label><input type="checkbox" value="${roleFromDB}" >${roleFromDB}</label>'
-                                + '</div>'
-                        + '</c:forEach>'
-                        + '<!-- <form:input type="text" class="form-control" path="roles"/> -->'
-                    + '</div>'
-                + '</td>'
-                + '<td>'
-                    + '<button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>'
-                    + '</td>'
-            + '</tr>'
-        + '</form:form>'
+            '<tr><td><div class="form-group"><input type="text" class="form-control" value='+id+' disabled="true"/></div></td>' +
+            '<td><div class="form-group"><input type="text" class="form-control" value='+name+'></div></td>' +
+            '<td><div class="form-group"><input type="text" class="form-control" value='+password+' disabled="true"></div></td>' +
+            '<td><div class="form-group"><input type="text" class="form-control" value='+email+'></div></td></tr>'
     }
 </script>
