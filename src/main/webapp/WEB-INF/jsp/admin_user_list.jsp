@@ -1,6 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -54,13 +53,14 @@
                             <td>${user.password}</td>
                             <td>${user.email}</td>
                             <td>
-                                <c:forEach items="${user.roles}" var="role" varStatus="status">
-                                    <c:out value="${fn:toUpperCase(fn:substring(role.name,5,6))}${fn:toLowerCase(fn:substring(role.name,6,fn:length(role.name)))}"/>
+                                <c:forEach items="${usersroles[user.name]}" var="role" varStatus="status">
+                                    <c:out value="${role}"/>
                                     <c:if test="${!status.last}">,</c:if>
                                 </c:forEach>
                             </td>
                             <td>
-                                <a href="#" onclick='changeUserRow(${user.id},"${user.name}","${user.password}","${user.email}")'><i class="glyphicon glyphicon-pencil"></i></a>
+                            <a href="#" onclick=
+                                    'changeUserRowForEdit(${user.id},"${user.name}","${user.password}","${user.email}","${usersroles[user.name]}","${roles}")'><i class="glyphicon glyphicon-pencil"></i></a>
                                 <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>
                             </td>
                         </tr>
@@ -96,13 +96,42 @@
 
 </html>
 <script type="text/javascript">
-    function changeUserRow(id,name,password,email)
-    {
+    function changeUserRowForEdit(id,name,password,email,userroles,allroles) {
+        var userRolesArray = userroles.replace(" ","").replace("[","").replace("]","").split(",");
+        var allRolesArray = allroles.replace(" ","").replace("[","").replace("]","").split(",");
+        var rolesCheckBox="";
+            for( var inx in allRolesArray ) {
+                var currentRole = allRolesArray[inx];
+                var isChecked = userRolesArray.indexOf(currentRole)!=-1;
+                rolesCheckBox += '<div class="checkbox">' +
+                '<label><input type="checkbox" value=""'+ (isChecked?' checked':'') +'>'+currentRole+'</label>'
+                '</div>'
+            }
+        ;
+
         var element = document.getElementById("row_"+id);
         element.outerHTML =
-            '<tr><td><div class="form-group"><input type="text" class="form-control" value='+id+' disabled="true"/></div></td>' +
-            '<td><div class="form-group"><input type="text" class="form-control" value='+name+'></div></td>' +
-            '<td><div class="form-group"><input type="text" class="form-control" value='+password+' disabled="true"></div></td>' +
-            '<td><div class="form-group"><input type="text" class="form-control" value='+email+'></div></td></tr>'
+            '<tr id='+"row_"+id+'>'+
+                '<td><div class="form-group">'+id+'</div></td>' +
+                '<td><div class="form-group"><input type="text" class="form-control" value='+name+'></div></td>' +
+                '<td><div class="form-group">'+password+'</div></td>' +
+                '<td><div class="form-group"><input type="text" class="form-control" value='+email+'></div></td>'+
+                '<td>'+rolesCheckBox+'</td>'+
+                '<td>'+
+                    '<a href="#" onclick=""><i class="glyphicon glyphicon-ok"></i></a>'+
+                    '<a href="#" onclick=changeUserRowFromEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userRolesArray+'")><i class="glyphicon glyphicon-remove"></i></a>'+
+                '<td>'+
+            '</tr>'
+    }
+    function changeUserRowFromEdit(id,name,password,email,userRoles) {
+        var element = document.getElementById("row_"+id);
+        element.outerHTML =
+            '<tr id='+"row_"+id+'>'+
+            '<td><div class="form-group">'+id+'</div></td>' +
+            '<td><div class="form-group">'+name+'</div></td>' +
+            '<td><div class="form-group">'+password+'</div></td>' +
+            '<td><div class="form-group">'+email+'</div></td>' +
+            '<td><div class="form-group">'+userRoles+'</div></td>' +
+            '</tr>'
     }
 </script>
