@@ -41,12 +41,14 @@ public class AppConfig {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
+    //excutor for rates updater
     @Bean
     @Scope("prototype")
     public ScheduledExecutorService scheduledSingleThreadExecutorService() {
         return Executors.newSingleThreadScheduledExecutor();
     }
 
+    //to enable jpa and transactions
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -75,7 +77,9 @@ public class AppConfig {
         jpa.setDataSource(dataSource());
         return jpa;
     }
+    //to enable jpa
 
+    //to make jsp working
     @Bean
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver
@@ -85,10 +89,5 @@ public class AppConfig {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-/*
-    @Bean
-    public Manager getManager() {
-        return new PersistentManager();
-    }
-*/
+    //to make jsp working
 }

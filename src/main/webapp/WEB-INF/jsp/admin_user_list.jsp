@@ -61,7 +61,7 @@
                             <td>
                             <a href="#" onclick=
                                     'changeUserRowForEdit(${user.id},"${user.name}","${user.password}","${user.email}","${usersroles[user.name]}","${roles}")'><i class="glyphicon glyphicon-pencil"></i></a>
-                                <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>
+                            <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>
                             </td>
                         </tr>
                     </c:forEach>
@@ -117,20 +117,24 @@
                 '<td><div class="form-group"><input type="text" class="form-control" value='+email+'></div></td>'+
                 '<td>'+rolesCheckBox+'</td>'+
                 '<td>'+
-                    '<a href="#" onclick=""><i class="glyphicon glyphicon-ok"></i></a>'+
-                    '<a href="#" onclick=changeUserRowFromEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'")><i class="glyphicon glyphicon-remove"></i></a>'+
+                    '<a href="#" onclick=\'changeUserRowFromEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-ok"></i></a>'+
+                    '<a href="#" onclick=\'changeUserRowFromEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-remove"></i></a>'+
                 '<td>'+
             '</tr>'
     }
-    function changeUserRowFromEdit(id,name,password,email,userRoles) {
+    function changeUserRowFromEdit(id,name,password,email,userroles,allroles) {
         var element = document.getElementById("row_"+id);
         element.outerHTML =
             '<tr id='+"row_"+id+'>'+
-            '<td><div class="form-group">'+id+'</div></td>' +
-            '<td><div class="form-group">'+name+'</div></td>' +
-            '<td><div class="form-group">'+password+'</div></td>' +
-            '<td><div class="form-group">'+email+'</div></td>' +
-            '<td><div class="form-group">'+userRoles+'</div></td>' +
+                '<td><div class="form-group">'+id+'</div></td>' +
+                '<td><div class="form-group">'+name+'</div></td>' +
+                '<td><div class="form-group">'+password+'</div></td>' +
+                '<td><div class="form-group">'+email+'</div></td>' +
+                '<td><div class="form-group">'+userroles+'</div></td>' +
+                '<td>'+
+                    '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
+                    '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'
+                 '</td>'+
             '</tr>'
     }
 </script>
