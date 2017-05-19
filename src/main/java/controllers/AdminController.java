@@ -47,8 +47,9 @@ public class AdminController {
         return "admin_user_edit";
     }
 
-    @RequestMapping(value="/admin/user/update",method = RequestMethod.POST)
-    public ModelAndView editsave(@ModelAttribute("userForm") Users user){
+    @Secured("ROLE_ADMIN")
+    @RequestMapping(value="/admin/user/update",method = RequestMethod.GET)
+    public ModelAndView update(Long id, String name, String password, String email, String roles ){
         //dao.update(emp);
         return new ModelAndView("redirect:/admin/user/list");
     }

@@ -10,6 +10,10 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <!-- import jquery-->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+
     <!-- bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!-- Optional theme
@@ -104,7 +108,7 @@
                 var currentRole = allRolesArray[inx];
                 var isChecked = userRolesArray.indexOf(currentRole)!=-1;
                 rolesCheckBox += '<div class="checkbox">' +
-                '<label><input type="checkbox" value=""'+ (isChecked?' checked':'') +'>'+currentRole+'</label>'
+                '<label><input type="checkbox" value=""'+ (isChecked?' checked':'') +'>'+currentRole+'</label>' +
                 '</div>'
             }
         ;
@@ -117,12 +121,40 @@
                 '<td><div class="form-group"><input type="text" class="form-control" value='+email+'></div></td>'+
                 '<td>'+rolesCheckBox+'</td>'+
                 '<td>'+
-                    '<a href="#" onclick=\'changeUserRowFromEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-ok"></i></a>'+
-                    '<a href="#" onclick=\'changeUserRowFromEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-remove"></i></a>'+
+                    '<a href="#" onclick=\'changeUserRowFromEditWithUpdate('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-ok"></i></a>'+
+                    '<a href="#" onclick=\'changeUserRowFromEditWithCancel('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-remove"></i></a>'+
                 '<td>'+
             '</tr>'
     }
-    function changeUserRowFromEdit(id,name,password,email,userroles,allroles) {
+    function changeUserRowFromEditWithUpdate(id,name,password,email,userroles,allroles) {
+        var element = document.getElementById("row_"+id);
+        $(function () {
+            $.get('/admin/user/update'
+                , { id : id
+                  , name : name
+                  , password: password
+                  , email: email
+                  , roles: userroles
+                  }
+                , function (data) {
+                    alert("Success " + data.success);
+                    element.outerHTML =
+                            '<tr id='+"row_"+id+'>'+
+                            '<td><div class="form-group">'+id+'</div></td>' +
+                            '<td><div class="form-group">'+name+'</div></td>' +
+                            '<td><div class="form-group">'+password+'</div></td>' +
+                            '<td><div class="form-group">'+email+'</div></td>' +
+                            '<td><div class="form-group">'+userroles+'</div></td>' +
+                            '<td>'+
+                            '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
+                            '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'+
+                            '</td>'+
+                            '</tr>'
+                  }
+            );
+        });
+    }
+    function changeUserRowFromEditWithCancel(id,name,password,email,userroles,allroles) {
         var element = document.getElementById("row_"+id);
         element.outerHTML =
             '<tr id='+"row_"+id+'>'+
@@ -133,7 +165,7 @@
                 '<td><div class="form-group">'+userroles+'</div></td>' +
                 '<td>'+
                     '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
-                    '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'
+                    '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'+
                  '</td>'+
             '</tr>'
     }
