@@ -108,7 +108,6 @@
                 '</div>'
             }
         ;
-
         var element = document.getElementById("row_"+id);
         element.outerHTML =
             '<tr id='+"row_"+id+'>'+
@@ -119,7 +118,7 @@
                 '<td>'+rolesCheckBox+'</td>'+
                 '<td>'+
                     '<a href="#" onclick=""><i class="glyphicon glyphicon-ok"></i></a>'+
-                    '<a href="#" onclick=changeUserRowFromEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userRolesArray+'")><i class="glyphicon glyphicon-remove"></i></a>'+
+                    '<a href="#" onclick=changeUserRowFromEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'")><i class="glyphicon glyphicon-remove"></i></a>'+
                 '<td>'+
             '</tr>'
     }

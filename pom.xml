@@ -154,7 +154,6 @@
             <version>${spring-security-version}</version>
         </dependency>
         <!-- spring security -->
-
     </dependencies>
 
     <build>

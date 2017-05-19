@@ -1,6 +1,13 @@
 package initializer;
 
 
+import org.apache.catalina.Context;
+import org.apache.catalina.Manager;
+import org.apache.catalina.session.PersistentManager;
+import org.apache.catalina.session.StandardManager;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -78,4 +85,10 @@ public class AppConfig {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
+/*
+    @Bean
+    public Manager getManager() {
+        return new PersistentManager();
+    }
+*/
 }
