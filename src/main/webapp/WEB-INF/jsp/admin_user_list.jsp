@@ -12,7 +12,9 @@
 
     <!-- import jquery-->
     <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+
+    <!-- import mycss -->
+    <link href="../../resources/css/my.css" rel="stylesheet"></link>
 
     <!-- bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -58,8 +60,7 @@
                             <td>${user.email}</td>
                             <td>
                                 <c:forEach items="${usersroles[user.name]}" var="role" varStatus="status">
-                                    <c:out value="${role}"/>
-                                    <c:if test="${!status.last}">,</c:if>
+                                    <c:out value="${role}"/><c:if test="${!status.last}">,</c:if>
                                 </c:forEach>
                             </td>
                             <td>
@@ -101,14 +102,17 @@
 </html>
 <script type="text/javascript">
     function changeUserRowForEdit(id,name,password,email,userroles,allroles) {
-        var userRolesArray = userroles.replace(" ","").replace("[","").replace("]","").split(",");
-        var allRolesArray = allroles.replace(" ","").replace("[","").replace("]","").split(",");
-        var rolesCheckBox="";
+        var userRolesArray = userroles.replace(" ","").replace("[","").replace("]","").split(",")
+          , allRolesArray = allroles.replace(" ","").replace("[","").replace("]","").split(",")
+          , userRolesFormatted = userRolesArray.join(", ")
+          , allRolesFormatted = allRolesArray.join(", ")
+          , rolesCheckBox=""
+          ;
             for( var inx in allRolesArray ) {
                 var currentRole = allRolesArray[inx];
                 var isChecked = userRolesArray.indexOf(currentRole)!=-1;
                 rolesCheckBox += '<div class="checkbox">' +
-                '<label><input type="checkbox" value=""'+ (isChecked?' checked':'') +'>'+currentRole+'</label>' +
+                '<label><input id="role_'+id+'_'+currentRole+'" type="checkbox" value=""'+ (isChecked?' checked':'') +'>'+currentRole+'</label>' +
                 '</div>'
             }
         ;
@@ -116,43 +120,80 @@
         element.outerHTML =
             '<tr id='+"row_"+id+'>'+
                 '<td><div class="form-group">'+id+'</div></td>' +
-                '<td><div class="form-group"><input type="text" class="form-control" value='+name+'></div></td>' +
+                '<td><div class="form-group"><input id="name_'+id+'" type="text" class="form-control" value='+name+'></div></td>' +
                 '<td><div class="form-group">'+password+'</div></td>' +
-                '<td><div class="form-group"><input type="text" class="form-control" value='+email+'></div></td>'+
+                '<td><div class="form-group"><input id="email_'+id+'" type="text" class="form-control" value='+email+'></div></td>'+
                 '<td>'+rolesCheckBox+'</td>'+
                 '<td>'+
-                    '<a href="#" onclick=\'changeUserRowFromEditWithUpdate('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-ok"></i></a>'+
-                    '<a href="#" onclick=\'changeUserRowFromEditWithCancel('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-remove"></i></a>'+
+                    '<a id="btn_edit_update_'+id+'" href="#" onclick=\'changeUserRowFromEditWithUpdate('+id+',"'+name+'","'+password+'","'+email+'","'+userRolesFormatted+'","'+allRolesFormatted+'")\'><i class="glyphicon glyphicon-ok"></i></a>'+
+                    '<a href="#" onclick=\'changeUserRowFromEditWithCancel('+id+',"'+name+'","'+password+'","'+email+'","'+userRolesFormatted+'","'+allRolesFormatted+'")\'><i class="glyphicon glyphicon-remove"></i></a>'+
                 '<td>'+
             '</tr>'
     }
     function changeUserRowFromEditWithUpdate(id,name,password,email,userroles,allroles) {
-        var element = document.getElementById("row_"+id);
-        $(function () {
-            $.get('/admin/user/update'
-                , { id : id
-                  , name : name
-                  , password: password
-                  , email: email
-                  , roles: userroles
-                  }
-                , function (data) {
-                    alert("Success " + data.success);
-                    element.outerHTML =
-                            '<tr id='+"row_"+id+'>'+
-                            '<td><div class="form-group">'+id+'</div></td>' +
-                            '<td><div class="form-group">'+name+'</div></td>' +
-                            '<td><div class="form-group">'+password+'</div></td>' +
-                            '<td><div class="form-group">'+email+'</div></td>' +
-                            '<td><div class="form-group">'+userroles+'</div></td>' +
-                            '<td>'+
-                            '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
-                            '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'+
-                            '</td>'+
-                            '</tr>'
-                  }
-            );
-        });
+        var element = document.getElementById("row_"+id)
+          , allrolesArray = allroles.split(", ")
+          , curUserRolesArray = userroles.split(", ")
+          , input_name = document.getElementById("name_"+id).value
+          , input_email = document.getElementById("email_"+id).value
+          , input_roles = []
+          ;
+
+        for( var inx in allrolesArray ) {
+            var role_element = document.getElementById("role_"+id+"_"+allrolesArray[inx]);
+            if( !role_element || !role_element.checked ) {
+                continue;
+            }
+            input_roles.push(allrolesArray[inx])
+        }
+
+        var btn_update = document.getElementById('btn_edit_update_'+id);
+        $('#btn_edit_update_'+id).before(('<div class="loader">'));
+        var curName, curEmail, curRoles;
+        $.ajax(
+            { type: "GET"
+            , url: '/admin/user/update'
+            , data:
+                { id : id
+                , name : input_name
+                , password: password
+                , email: input_email
+                , roles: input_roles
+                }
+            , success:
+              function() {
+                  alert("success");
+                  curName = input_name;
+                  curEmail = input_email;
+                  curRoles = input_roles.join(", ");
+              }
+            , error:
+              function(xhr) {
+                  $("#alert-danger").fadeTo(1000, 500).slideUp(500, function(){
+                      $("#alert-danger").alert('close');
+                  });
+                  //$("body").append('<div class="alert alert-danger"  "><strong>'+JSON.parse(xhr.responseText).message+'</strong></div>')
+                  curName = name;
+                  curEmail = email;
+                  curRoles = curUserRolesArray.join(", ");
+              }
+            , complete:
+              function() {
+                  element.outerHTML =
+                      '<tr id='+"row_"+id+'>'+
+                      '<td><div class="form-group">'+id+'</div></td>' +
+                      '<td><div class="form-group">'+curName+'</div></td>' +
+                      '<td><div class="form-group">'+password+'</div></td>' +
+                      '<td><div class="form-group">'+curEmail+'</div></td>' +
+                      '<td><div class="form-group">'+curRoles+'</div></td>' +
+                      '<td>'+
+                      '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+curName+'","'+password+'","'+curEmail+'","'+curRoles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
+                      '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'+
+                      '</td>'+
+                      '</tr>'
+              }
+            }
+        )
     }
     function changeUserRowFromEditWithCancel(id,name,password,email,userroles,allroles) {
         var element = document.getElementById("row_"+id);

@@ -13,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.apache.coyote.http11.Constants.a;
 
 /**
  * Created by Admin on 22.04.2017.
@@ -51,14 +54,22 @@ public class RoleRepository {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Role findRoleByName(String name) {
-        Role role = em.find(Role.class, name);
-        return role;
+    public List<Role> loadAll() {
+        Query query = em.createQuery("SELECT e FROM Role e");
+        return query.getResultList();
+    }
+
+    public Set<Role> findRoles(List<String> roles) {
+        return roles
+                .stream()
+                .map(this::findRoleByName)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Collection<Role> loadAll() {
-        Query query = em.createQuery("SELECT e FROM Role e");
-        return (Collection<Role>) query.getResultList();
+    private Role findRoleByName(String name) {
+        return em.createQuery("SELECT r FROM Role r WHERE r.name = :rolename", Role.class)
+                .setParameter("rolename", name).getSingleResult();
     }
 }
