@@ -61,6 +61,13 @@ public class AdminController {
         return new ModelAndView("redirect:/admin/user/list");
     }
 
+    @Secured("ROLE_ADMIN")
+    @RequestMapping(value="/admin/user/delete",method = RequestMethod.GET)
+    public ModelAndView delete(@RequestParam(value = "id") Long id){
+        userRepository.deleteUser(id);
+        return new ModelAndView("redirect:/admin/user/list");
+    }
+
     private Map<String, List<String>> createUsersRolesMap(Collection<Users> users) {
         Map<String, List<String>> userRoles = new HashMap<>();
         users.forEach( user -> userRoles.put(user.getName(),

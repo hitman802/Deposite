@@ -112,6 +112,15 @@ public class UserRepository {
     }
 
     @Transactional
+    public void deleteUser(Long id) {
+        Users user = findUserById(id);
+        if( user == null ) {
+            throw new UserNotFoundException();
+        }
+        em.remove(user);
+    }
+
+    @Transactional
     public void updateUser(Long id, String name, String email, List<String> roles) {
         Users user = findUserById(id);
         if( user == null ) {

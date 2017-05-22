@@ -68,7 +68,7 @@
                             <td>
                                 <a href="#" onclick=
                                         'changeUserRowForEdit(${user.id},"${user.name}","${user.password}","${user.email}","${usersroles[user.name]}","${roles}")'><i class="glyphicon glyphicon-pencil"></i></a>
-                                <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove" data-book-id="my_id_value"></i></a>
+                                <a href="#myModal" role="button" data-toggle="modal" data-userid=${user.id}><i class="glyphicon glyphicon-remove" ></i></a>
                              </td>
                         </tr>
                     </c:forEach>
@@ -87,6 +87,7 @@
             </ul>
         </nav>
         <div id="myModal" class="modal fade" role="dialog">
+            <input id="hidden_field_userid" type="hidden">
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -98,7 +99,7 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                        <button class="btn btn-danger" data-dismiss="modal" onclick="deleteUser(bookId)">Delete</button>
+                        <button class="btn btn-danger" data-dismiss="modal" onclick=deleteUser($('input#hidden_field_userid').val())>Delete</button>
                     </div>
                 </div>
             </div>
@@ -108,14 +109,8 @@
 </html>
 <script type="text/javascript">
     $('#myModal').on('show.bs.modal', function(e) {
-
-        //get data-id attribute of the clicked element
-        var bookId = $(e.relatedTarget).data('book-id');
-
-        alert("fff"+bookId)
-
-        //populate the textbox
-        $(e.currentTarget).find('input[name="bookId"]').val(bookId);
+        var userid = $(e.relatedTarget).data('userid');
+        $(e.currentTarget).find('input[id="hidden_field_userid"]').val(userid);
     });
     function changeUserRowForEdit(id,name,password,email,userroles,allroles) {
         var userRolesArray = userroles.replace(" ","").replace("[","").replace("]","").split(",")
@@ -219,7 +214,7 @@
                       '<td><div class="form-group">'+curRoles+'</div></td>' +
                       '<td>'+
                       '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+curName+'","'+password+'","'+curEmail+'","'+curRoles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
-                      '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'+
+                      '<a href="#myModal" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
                       '</td>'+
                       '</tr>'
               }
@@ -237,11 +232,49 @@
                 '<td><div class="form-group">'+userroles+'</div></td>' +
                 '<td>'+
                     '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
-                    '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'+
+                    '<a href="#myModal" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
                  '</td>'+
             '</tr>'
     }
     function deleteUser(id) {
-        alert('delete called id=' + id)
+        $.ajax(
+            { type: "GET"
+                , url: '/admin/user/delete'
+                , data:
+                { id : id
+                }
+                , success:
+                function() {
+                    toastr.options=
+                        { closeButton: true
+                            , showMethod: 'fadeIn'
+                            , timeOut: 1000
+                            , extendedTimeOut: 1000
+                            , closeMethod: 'fadeOut'
+                            , closeDuration: 1000
+                            , positionClass: 'toast-bottom-right'
+                        }
+                    toastr.success('User successfully deleted');
+                }
+                , error:
+                function(xhr) {
+                    toastr.options=
+                        { closeButton: true
+                            , showMethod: 'fadeIn'
+                            , timeOut: 2000
+                            , extendedTimeOut: 2000
+                            , closeMethod: 'fadeOut'
+                            , closeDuration: 2000
+                            , positionClass: 'toast-bottom-right'
+                        }
+                    toastr.error(JSON.parse(xhr.responseText).message);
+                }
+                , complete:
+                function() {
+                    var element = document.getElementById("row_" + id);
+                    element.parentNode.removeChild(element);
+                }
+            }
+        )
     }
 </script>
