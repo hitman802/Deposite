@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Created by Admin on 20.05.2017.
  */
-@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "email field not unique")
+@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Email field is not unique")
 public class UniqueUserEmailException extends RuntimeException {
 }

@@ -13,8 +13,10 @@
     <!-- import jquery-->
     <script src="http://code.jquery.com/jquery-latest.js"></script>
 
-    <!-- import mycss -->
-    <link href="../../resources/css/my.css" rel="stylesheet"></link>
+    <!--import toastr -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 
     <!-- bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -162,20 +164,35 @@
                 }
             , success:
               function() {
-                  alert("success");
                   curName = input_name;
                   curEmail = input_email;
                   curRoles = input_roles.join(", ");
+                  toastr.options=
+                  { closeButton: true
+                      , showMethod: 'fadeIn'
+                      , timeOut: 1000
+                      , extendedTimeOut: 1000
+                      , closeMethod: 'fadeOut'
+                      , closeDuration: 1000
+                      , positionClass: 'toast-bottom-right'
+                  }
+                  toastr.success('User '+ curName +' successfully changed');
               }
             , error:
               function(xhr) {
-                  $("#alert-danger").fadeTo(1000, 500).slideUp(500, function(){
-                      $("#alert-danger").alert('close');
-                  });
-                  //$("body").append('<div class="alert alert-danger"  "><strong>'+JSON.parse(xhr.responseText).message+'</strong></div>')
                   curName = name;
                   curEmail = email;
                   curRoles = curUserRolesArray.join(", ");
+                  toastr.options=
+                  { closeButton: true
+                      , showMethod: 'fadeIn'
+                      , timeOut: 2000
+                      , extendedTimeOut: 2000
+                      , closeMethod: 'fadeOut'
+                      , closeDuration: 2000
+                      , positionClass: 'toast-bottom-right'
+                  }
+                  toastr.error(JSON.parse(xhr.responseText).message);
               }
             , complete:
               function() {
