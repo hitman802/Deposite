@@ -66,10 +66,10 @@
                                 </c:forEach>
                             </td>
                             <td>
-                            <a href="#" onclick=
-                                    'changeUserRowForEdit(${user.id},"${user.name}","${user.password}","${user.email}","${usersroles[user.name]}","${roles}")'><i class="glyphicon glyphicon-pencil"></i></a>
-                            <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove" data-book-id="my_id_value"></i></a>
-                            </td>
+                                <a href="#" onclick=
+                                        'changeUserRowForEdit(${user.id},"${user.name}","${user.password}","${user.email}","${usersroles[user.name]}","${roles}")'><i class="glyphicon glyphicon-pencil"></i></a>
+                                <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove" data-book-id="my_id_value"></i></a>
+                             </td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -94,20 +94,29 @@
                         <h4 class="modal-title">Delete user</h4>
                     </div>
                     <div class="modal-body">
-                        <p class="error-text">Are you sure you want to delete the user?</p>
+                        <p class="error-text">Are you sure you want to delete the user? </p>
                     </div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                        <button class="btn btn-danger" data-dismiss="modal" onclick="deleteUser(this.id)">Delete</button>
+                        <button class="btn btn-danger" data-dismiss="modal" onclick="deleteUser(bookId)">Delete</button>
                     </div>
                 </div>
-
             </div>
         </div>
     </body>
 
 </html>
 <script type="text/javascript">
+    $('#myModal').on('show.bs.modal', function(e) {
+
+        //get data-id attribute of the clicked element
+        var bookId = $(e.relatedTarget).data('book-id');
+
+        alert("fff"+bookId)
+
+        //populate the textbox
+        $(e.currentTarget).find('input[name="bookId"]').val(bookId);
+    });
     function changeUserRowForEdit(id,name,password,email,userroles,allroles) {
         var userRolesArray = userroles.replace(" ","").replace("[","").replace("]","").split(",")
           , allRolesArray = allroles.replace(" ","").replace("[","").replace("]","").split(",")
