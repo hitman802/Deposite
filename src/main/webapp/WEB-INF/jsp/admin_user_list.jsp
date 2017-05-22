@@ -68,7 +68,7 @@
                             <td>
                             <a href="#" onclick=
                                     'changeUserRowForEdit(${user.id},"${user.name}","${user.password}","${user.email}","${usersroles[user.name]}","${roles}")'><i class="glyphicon glyphicon-pencil"></i></a>
-                            <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>
+                            <a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove" data-book-id="my_id_value"></i></a>
                             </td>
                         </tr>
                     </c:forEach>
@@ -86,17 +86,22 @@
                 <li class="page-item"><a class="page-link" href="#">Next</a></li>
             </ul>
         </nav>
-        <div class="modal small hide fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">Delete Confirmation</h3>
-            </div>
-            <div class="modal-body">
-                <p class="error-text">Are you sure you want to delete the user?</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                <button class="btn btn-danger" data-dismiss="modal">Delete</button>
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h4 class="modal-title">Delete user</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p class="error-text">Are you sure you want to delete the user?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                        <button class="btn btn-danger" data-dismiss="modal" onclick="deleteUser(this.id)">Delete</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </body>
@@ -226,5 +231,8 @@
                     '<a href="#myModal" role="button" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>'+
                  '</td>'+
             '</tr>'
+    }
+    function deleteUser(id) {
+        alert('delete called id=' + id)
     }
 </script>
