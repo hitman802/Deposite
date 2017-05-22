@@ -34,4 +34,8 @@ public class UserServiceImpl implements IUserService {
     public Users findByUsername(String username) {
         return userRepository.loadUserByName(username);
     }
+
+    public String encodePassword(String passwordStr) {
+        return bCryptPasswordEncoder.encode(passwordStr);
+    }
 }

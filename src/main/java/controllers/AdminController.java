@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import service.UserServiceImpl;
 import utils.FormatUtils;
 
 import java.util.*;
@@ -27,6 +28,8 @@ public class AdminController {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private UserServiceImpl userService;
 
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/admin/user/list")
@@ -52,7 +55,8 @@ public class AdminController {
             , @RequestParam(value = "name") String name
             , @RequestParam(value = "password") String password
             , @RequestParam(value = "email") String email
-            , @RequestParam(value = "roles[]") String[] roles ){
+            , @RequestParam(value = "roles[]") String[] roles
+        ){
 
         //check user name and email uniqueness
         userRepository.validateUserNameAndEmail(id, name, email);
@@ -65,6 +69,17 @@ public class AdminController {
     @RequestMapping(value="/admin/user/delete",method = RequestMethod.GET)
     public ModelAndView delete(@RequestParam(value = "id") Long id){
         userRepository.deleteUser(id);
+        return new ModelAndView("redirect:/admin/user/list");
+    }
+
+    @Secured("ROLE_ADMIN")
+    @RequestMapping(value="/admin/user/create",method = RequestMethod.GET)
+    public ModelAndView create(@RequestParam(value = "name") String name
+            , @RequestParam(value = "password") String password
+            , @RequestParam(value = "email") String email
+        ){
+        userRepository.validateUserNameAndEmail(name, email);
+        userRepository.addUser(name, userService.encodePassword(password), email);
         return new ModelAndView("redirect:/admin/user/list");
     }
 

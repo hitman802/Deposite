@@ -39,7 +39,7 @@
         <h1>Users:</h1>
 
         <div class="btn-toolbar">
-            <button class="btn btn-primary">New User</button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#modalNewUser">New User</button>
         </div>
         <div class="well">
             <table class="table">
@@ -68,7 +68,7 @@
                             <td>
                                 <a href="#" onclick=
                                         'changeUserRowForEdit(${user.id},"${user.name}","${user.password}","${user.email}","${usersroles[user.name]}","${roles}")'><i class="glyphicon glyphicon-pencil"></i></a>
-                                <a href="#myModal" role="button" data-toggle="modal" data-userid=${user.id}><i class="glyphicon glyphicon-remove" ></i></a>
+                                <a href="#modalConfirmDeleteUser" role="button" data-toggle="modal" data-userid=${user.id}><i class="glyphicon glyphicon-remove" ></i></a>
                              </td>
                         </tr>
                     </c:forEach>
@@ -86,7 +86,7 @@
                 <li class="page-item"><a class="page-link" href="#">Next</a></li>
             </ul>
         </nav>
-        <div id="myModal" class="modal fade" role="dialog">
+        <div id="modalConfirmDeleteUser" class="modal fade" role="dialog">
             <input id="hidden_field_userid" type="hidden">
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
@@ -103,12 +103,51 @@
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+            <div id="modalNewUser" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">×</button>
+                            <h4 class="modal-title">Create new user</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group"><input id="create_new_user_name" type="text" class="form-control" value="name"></div>
+                            <div class="form-group"><input id="create_new_user_password" type="text" class="form-control" value="password"></div>
+                            <div class="form-group"><input id="create_new_user_email" type="text" class="form-control" value="email"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            <button class="btn btn-success" data-dismiss="modal" onclick="createNewUser($('input#create_new_user_name').val(),$('input#create_new_user_password').val(), $('input#create_new_user_email').val())">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </body>
 
 </html>
 <script type="text/javascript">
-    $('#myModal').on('show.bs.modal', function(e) {
+    var toastrOptions_success =
+        { closeButton: true
+        , showMethod: 'fadeIn'
+        , timeOut: 1000
+        , extendedTimeOut: 1000
+        , closeMethod: 'fadeOut'
+        , closeDuration: 1000
+        , positionClass: 'toast-bottom-right'
+        }
+      , toastrOptions_failed =
+        { closeButton: true
+        , showMethod: 'fadeIn'
+        , timeOut: 2000
+        , extendedTimeOut: 2000
+        , closeMethod: 'fadeOut'
+        , closeDuration: 2000
+        , positionClass: 'toast-bottom-right'
+        }
+      ;
+
+    $('#modalConfirmDeleteUser').on('show.bs.modal', function(e) {
         var userid = $(e.relatedTarget).data('userid');
         $(e.currentTarget).find('input[id="hidden_field_userid"]').val(userid);
     });
@@ -176,15 +215,7 @@
                   curName = input_name;
                   curEmail = input_email;
                   curRoles = input_roles.join(", ");
-                  toastr.options=
-                  { closeButton: true
-                      , showMethod: 'fadeIn'
-                      , timeOut: 1000
-                      , extendedTimeOut: 1000
-                      , closeMethod: 'fadeOut'
-                      , closeDuration: 1000
-                      , positionClass: 'toast-bottom-right'
-                  }
+                  toastr.options = toastrOptions_success;
                   toastr.success('User '+ curName +' successfully changed');
               }
             , error:
@@ -192,15 +223,7 @@
                   curName = name;
                   curEmail = email;
                   curRoles = curUserRolesArray.join(", ");
-                  toastr.options=
-                  { closeButton: true
-                      , showMethod: 'fadeIn'
-                      , timeOut: 2000
-                      , extendedTimeOut: 2000
-                      , closeMethod: 'fadeOut'
-                      , closeDuration: 2000
-                      , positionClass: 'toast-bottom-right'
-                  }
+                  toastr.options = toastrOptions_failed;
                   toastr.error(JSON.parse(xhr.responseText).message);
               }
             , complete:
@@ -214,7 +237,7 @@
                       '<td><div class="form-group">'+curRoles+'</div></td>' +
                       '<td>'+
                       '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+curName+'","'+password+'","'+curEmail+'","'+curRoles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
-                      '<a href="#myModal" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
+                      '<a href="#modalConfirmDeleteUser" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
                       '</td>'+
                       '</tr>'
               }
@@ -232,7 +255,7 @@
                 '<td><div class="form-group">'+userroles+'</div></td>' +
                 '<td>'+
                     '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
-                    '<a href="#myModal" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
+                    '<a href="#modalConfirmDeleteUser" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
                  '</td>'+
             '</tr>'
     }
@@ -245,34 +268,45 @@
                 }
                 , success:
                 function() {
-                    toastr.options=
-                        { closeButton: true
-                            , showMethod: 'fadeIn'
-                            , timeOut: 1000
-                            , extendedTimeOut: 1000
-                            , closeMethod: 'fadeOut'
-                            , closeDuration: 1000
-                            , positionClass: 'toast-bottom-right'
-                        }
+                    toastr.options = toastrOptions_success;
                     toastr.success('User successfully deleted');
                 }
                 , error:
                 function(xhr) {
-                    toastr.options=
-                        { closeButton: true
-                            , showMethod: 'fadeIn'
-                            , timeOut: 2000
-                            , extendedTimeOut: 2000
-                            , closeMethod: 'fadeOut'
-                            , closeDuration: 2000
-                            , positionClass: 'toast-bottom-right'
-                        }
+                    toastr.options = toastrOptions_failed;
                     toastr.error(JSON.parse(xhr.responseText).message);
                 }
                 , complete:
                 function() {
                     var element = document.getElementById("row_" + id);
                     element.parentNode.removeChild(element);
+                }
+            }
+        )
+    }
+    function createNewUser(name, password, email) {
+        alert("Create new user called name=" + name + " password="+password + " email="+email);
+        $.ajax(
+            { type: "GET"
+                , url: '/admin/user/create'
+                , data:
+                {  name : name
+                , password: password
+                , email: email
+                }
+            , success:
+                function() {
+                    toastr.options = toastrOptions_success;
+                    toastr.success('User '+ name +' successfully added');
+                }
+            , error:
+                function(xhr) {
+                    toastr.options = toastrOptions_failed;
+                    toastr.error(JSON.parse(xhr.responseText).message);
+                }
+            , complete:
+                function() {
+
                 }
             }
         )

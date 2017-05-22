@@ -5,6 +5,7 @@ import dao.entities.Users;
 import exceptions.UniqueUserEmailException;
 import exceptions.UniqueUserNameException;
 import exceptions.UserNotFoundException;
+import factory.UserFactory;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -28,9 +29,10 @@ public class UserRepository {
 
     @PersistenceContext
     private EntityManager em;
-
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private UserFactory userFactory;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Users loadUserByName(String name) {
@@ -74,9 +76,72 @@ public class UserRepository {
     }
 
     @Transactional
+    public void validateUserNameAndEmail(String name, String email) {
+        validateUserName(name);
+        validateUserEmail(email);
+    }
+
+    @Transactional
     public void validateUserNameAndEmail(Long id, String name, String email) {
         validateUserName(id, name);
         validateUserEmail(id, email);
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        Users user = findUserById(id);
+        if( user == null ) {
+            throw new UserNotFoundException();
+        }
+        em.remove(user);
+    }
+
+    @Transactional
+    public void updateUser(Long id, String name, String email, List<String> roles) {
+        Users user = findUserById(id);
+        if( user == null ) {
+            throw new UserNotFoundException();
+        }
+        user.setName(name);
+        user.setEmail(email);
+        user.setRoles(roleRepository.findRoles(roles));
+    }
+
+    @Transactional
+    public void addUser(String name, String password, String email) {
+        Users user = userFactory.create();
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(password);
+        saveUser(user);
+    }
+
+    /**
+     * throws runtime exception in case if username not unique
+     * @param email - user name to check
+     */
+    @Transactional
+    private void validateUserEmail(String email){
+        if( !em.createQuery("SELECT u from Users u WHERE u.email = :useremail")
+                .setParameter("useremail", email)
+                .getResultList()
+                .isEmpty() ) {
+            throw new UniqueUserEmailException();
+        }
+    }
+
+    /**
+     * throws runtime exception in case if username not unique
+     * @param name - user name to check
+     */
+    @Transactional
+    private void validateUserName(String name){
+        if( !em.createQuery("SELECT u from Users u WHERE u.name = :username")
+                .setParameter("username", name)
+                .getResultList()
+                .isEmpty() ) {
+            throw new UniqueUserNameException();
+        }
     }
 
     /**
@@ -111,23 +176,4 @@ public class UserRepository {
          }
     }
 
-    @Transactional
-    public void deleteUser(Long id) {
-        Users user = findUserById(id);
-        if( user == null ) {
-            throw new UserNotFoundException();
-        }
-        em.remove(user);
-    }
-
-    @Transactional
-    public void updateUser(Long id, String name, String email, List<String> roles) {
-        Users user = findUserById(id);
-        if( user == null ) {
-            throw new UserNotFoundException();
-        }
-        user.setName(name);
-        user.setEmail(email);
-        user.setRoles(roleRepository.findRoles(roles));
-    }
 }
