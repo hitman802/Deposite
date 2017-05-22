@@ -1,6 +1,7 @@
 package controllers;
 
 import dao.entities.Users;
+import factory.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,16 +21,16 @@ public class LoginController {
 
     @Autowired
     private IUserService userService;
-
     @Autowired
     private ISecurityService securityService;
-
     @Autowired
     private UserValidator userValidator;
+    @Autowired
+    private UserFactory userFactory;
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(Model model) {
-        model.addAttribute("userForm", new Users());
+        model.addAttribute("userForm", userFactory.create());
         return "registration";
     }
 
