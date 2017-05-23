@@ -60,7 +60,12 @@ public class LoginController {
         return "login";
     }
 
-    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"", "/index"}, method = RequestMethod.GET)
+    public String landing() {
+        return "landing";
+    }
+
+    @RequestMapping(value = {"/welcome"}, method = RequestMethod.GET)
     public String welcome(Model model) {
         return "welcome";
     }
