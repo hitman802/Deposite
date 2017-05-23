@@ -42,12 +42,11 @@
             <button class="btn btn-primary" data-toggle="modal" data-target="#modalNewUser">New User</button>
         </div>
         <div class="well">
-            <table class="table">
+            <table id="user_table" class="table">
                 <thead>
                 <tr>
                     <th>Id</th>
                     <th>Name</th>
-                    <th>Password</th>
                     <th>Email</th>
                     <th>Roles</th>
                     <th style="width: 36px;"></th>
@@ -58,7 +57,6 @@
                         <tr id="row_${user.id}">
                             <td>${user.id}</td>
                             <td>${user.name}</td>
-                            <td>${user.password}</td>
                             <td>${user.email}</td>
                             <td>
                                 <c:forEach items="${usersroles[user.name]}" var="role" varStatus="status">
@@ -105,6 +103,7 @@
             </div>
             </div>
             <div id="modalNewUser" class="modal fade" role="dialog">
+                <input id="hidden_field_allroles" type="hidden">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -115,10 +114,15 @@
                             <div class="form-group"><input id="create_new_user_name" type="text" class="form-control" value="name"></div>
                             <div class="form-group"><input id="create_new_user_password" type="text" class="form-control" value="password"></div>
                             <div class="form-group"><input id="create_new_user_email" type="text" class="form-control" value="email"></div>
+                            <div class="checkbox">
+                                <c:forEach items="${roles}" var="currentRole">
+                                    <label><input id="newuser_role_${currentRole}" type="checkbox" value="">${currentRole}</label>
+                                </c:forEach>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                            <button class="btn btn-success" data-dismiss="modal" onclick="createNewUser($('input#create_new_user_name').val(),$('input#create_new_user_password').val(), $('input#create_new_user_email').val())">Create</button>
+                            <button class="btn btn-success" data-dismiss="modal" onclick='createNewUser($("input#create_new_user_name").val(),$("input#create_new_user_password").val(), $("input#create_new_user_email").val(),"${roles}")'>Create</button>
                         </div>
                     </div>
                 </div>
@@ -169,9 +173,8 @@
         var element = document.getElementById("row_"+id);
         element.outerHTML =
             '<tr id='+"row_"+id+'>'+
-                '<td><div class="form-group">'+id+'</div></td>' +
+                '<td>'+id+'</td>' +
                 '<td><div class="form-group"><input id="name_'+id+'" type="text" class="form-control" value='+name+'></div></td>' +
-                '<td><div class="form-group">'+password+'</div></td>' +
                 '<td><div class="form-group"><input id="email_'+id+'" type="text" class="form-control" value='+email+'></div></td>'+
                 '<td>'+rolesCheckBox+'</td>'+
                 '<td>'+
@@ -206,7 +209,6 @@
             , data:
                 { id : id
                 , name : input_name
-                , password: password
                 , email: input_email
                 , roles: input_roles
                 }
@@ -230,15 +232,14 @@
               function() {
                   element.outerHTML =
                       '<tr id='+"row_"+id+'>'+
-                      '<td><div class="form-group">'+id+'</div></td>' +
-                      '<td><div class="form-group">'+curName+'</div></td>' +
-                      '<td><div class="form-group">'+password+'</div></td>' +
-                      '<td><div class="form-group">'+curEmail+'</div></td>' +
-                      '<td><div class="form-group">'+curRoles+'</div></td>' +
-                      '<td>'+
-                      '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+curName+'","'+password+'","'+curEmail+'","'+curRoles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
-                      '<a href="#modalConfirmDeleteUser" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
-                      '</td>'+
+                          '<td>'+id+'</td>' +
+                          '<td>'+curName+'</td>' +
+                          '<td>'+curEmail+'</td>' +
+                          '<td>'+curRoles+'</td>' +
+                          '<td>'+
+                              '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+curName+'","'+password+'","'+curEmail+'","'+curRoles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
+                              '<a href="#modalConfirmDeleteUser" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
+                          '</td>'+
                       '</tr>'
               }
             }
@@ -248,11 +249,10 @@
         var element = document.getElementById("row_"+id);
         element.outerHTML =
             '<tr id='+"row_"+id+'>'+
-                '<td><div class="form-group">'+id+'</div></td>' +
-                '<td><div class="form-group">'+name+'</div></td>' +
-                '<td><div class="form-group">'+password+'</div></td>' +
-                '<td><div class="form-group">'+email+'</div></td>' +
-                '<td><div class="form-group">'+userroles+'</div></td>' +
+                '<td>'+id+'</td>' +
+                '<td>'+name+'</td>' +
+                '<td>'+email+'</td>' +
+                '<td>'+userroles+'</td>' +
                 '<td>'+
                     '<a href="#" onclick=\'changeUserRowForEdit('+id+',"'+name+'","'+password+'","'+email+'","'+userroles+'","'+allroles+'")\'><i class="glyphicon glyphicon-pencil"></i></a>'+
                     '<a href="#modalConfirmDeleteUser" role="button" data-toggle="modal" data-userid="'+id+'"><i class="glyphicon glyphicon-remove"></i></a>'+
@@ -284,8 +284,19 @@
             }
         )
     }
-    function createNewUser(name, password, email) {
-        alert("Create new user called name=" + name + " password="+password + " email="+email);
+    function createNewUser(name, password, email, userroles) {
+
+        //need to find all checked roles
+        var userRolesArray = userroles.replace(" ","").replace("[","").replace("]","").split(",")
+          , checkedRoles = []
+          ;
+        for( var inx=0 in userRolesArray ) {
+            var element = document.getElementById('newuser_role_'+userRolesArray[inx]);
+            if( element && element.checked ) {
+                checkedRoles.push(userRolesArray[inx])
+            }
+        }
+
         $.ajax(
             { type: "GET"
                 , url: '/admin/user/create'
@@ -293,10 +304,12 @@
                 {  name : name
                 , password: password
                 , email: email
+                , roles: checkedRoles
                 }
             , success:
                 function() {
                     toastr.options = toastrOptions_success;
+                    window.location.reload()
                     toastr.success('User '+ name +' successfully added');
                 }
             , error:
@@ -306,7 +319,6 @@
                 }
             , complete:
                 function() {
-
                 }
             }
         )

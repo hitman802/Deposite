@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import service.UserServiceImpl;
 import utils.FormatUtils;
+import validation.UserRolesValidator;
+import validation.UserValidator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +32,10 @@ public class AdminController {
     private RoleRepository roleRepository;
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private UserValidator userValidator;
+    @Autowired
+    private UserRolesValidator userRolesValidator;
 
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/admin/user/list")
@@ -53,13 +59,12 @@ public class AdminController {
     @RequestMapping(value="/admin/user/update",method = RequestMethod.GET)
     public ModelAndView update(@RequestParam(value = "id") Long id
             , @RequestParam(value = "name") String name
-            , @RequestParam(value = "password") String password
             , @RequestParam(value = "email") String email
             , @RequestParam(value = "roles[]") String[] roles
         ){
 
         //check user name and email uniqueness
-        userRepository.validateUserNameAndEmail(id, name, email);
+        userValidator.validateUserNameAndEmail(id, name, email);
         userRepository.updateUser(id, name, email, FormatUtils.formatRolesFromViewToDB(Arrays.asList(roles)));
 
         return new ModelAndView("redirect:/admin/user/list");
@@ -77,9 +82,13 @@ public class AdminController {
     public ModelAndView create(@RequestParam(value = "name") String name
             , @RequestParam(value = "password") String password
             , @RequestParam(value = "email") String email
+            , @RequestParam(value = "roles[]") String[] roles
         ){
-        userRepository.validateUserNameAndEmail(name, email);
-        userRepository.addUser(name, userService.encodePassword(password), email);
+
+        userValidator.validateUserNameAndEmail(name, email);
+        userRolesValidator.validateRoles(roles);
+
+        userRepository.addUser(name, userService.encodePassword(password), email, FormatUtils.formatRolesFromViewToDB(Arrays.asList(roles)));
         return new ModelAndView("redirect:/admin/user/list");
     }
 

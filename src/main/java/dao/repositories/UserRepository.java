@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -75,17 +76,6 @@ public class UserRepository {
         em.persist(user);
     }
 
-    @Transactional
-    public void validateUserNameAndEmail(String name, String email) {
-        validateUserName(name);
-        validateUserEmail(email);
-    }
-
-    @Transactional
-    public void validateUserNameAndEmail(Long id, String name, String email) {
-        validateUserName(id, name);
-        validateUserEmail(id, email);
-    }
 
     @Transactional
     public void deleteUser(Long id) {
@@ -108,72 +98,47 @@ public class UserRepository {
     }
 
     @Transactional
-    public void addUser(String name, String password, String email) {
+    public void addUser(String name, String password, String email, List<String> roles) {
         Users user = userFactory.create();
         user.setName(name);
         user.setEmail(email);
         user.setPassword(password);
+        user.setRoles(roleRepository.findRoles(roles));
         saveUser(user);
     }
 
-    /**
-     * throws runtime exception in case if username not unique
-     * @param email - user name to check
-     */
     @Transactional
-    private void validateUserEmail(String email){
-        if( !em.createQuery("SELECT u from Users u WHERE u.email = :useremail")
-                .setParameter("useremail", email)
-                .getResultList()
-                .isEmpty() ) {
-            throw new UniqueUserEmailException();
+    public Users findUserByEmail(String email) {
+     try {
+            return (Users) em.createQuery("SELECT u from Users u WHERE u.email = :useremail")
+                    .setParameter("useremail", email)
+                    .getSingleResult();
+        } catch( NoResultException e ) {
+            return null;
         }
     }
 
-    /**
-     * throws runtime exception in case if username not unique
-     * @param name - user name to check
-     */
     @Transactional
-    private void validateUserName(String name){
-        if( !em.createQuery("SELECT u from Users u WHERE u.name = :username")
-                .setParameter("username", name)
-                .getResultList()
-                .isEmpty() ) {
-            throw new UniqueUserNameException();
+    public Users findUserByNameWithDifferentId(Long id, String name) {
+        try {
+            return (Users) em.createQuery("SELECT u from Users u WHERE u.id != :userid AND u.name = :username")
+                    .setParameter("userid", id)
+                    .setParameter("username", name)
+                    .getSingleResult();
+        } catch( NoResultException e ) {
+            return null;
         }
     }
 
-    /**
-     * throws runtime exception in case if username not unique
-     * @param id - user id
-     * @param name - user name to check
-     */
     @Transactional
-    private void validateUserName(Long id, String name){
-        if( !em.createQuery("SELECT u from Users u WHERE u.id != :userid AND u.name = :username")
-                .setParameter("userid", id)
-                .setParameter("username", name)
-                .getResultList()
-                .isEmpty() ) {
-            throw new UniqueUserNameException();
+    public Users findUserByEmailWithDifferentId(Long id, String email) {
+        try {
+            return (Users) em.createQuery("SELECT u from Users u WHERE u.id != :userid AND u.email = :useremail")
+                    .setParameter("userid", id)
+                    .setParameter("useremail", email)
+                    .getSingleResult();
+        } catch( NoResultException e ) {
+            return null;
         }
     }
-
-    /**
-     * throws runtime exception in case if user email not unique
-     * @param id - user id
-     * @param email - user email to check
-     */
-    @Transactional
-    private void validateUserEmail(Long id, String email){
-         if( !em.createQuery("SELECT u from Users u WHERE u.id != :userid AND u.email = :useremail")
-                .setParameter("userid", id)
-                .setParameter("useremail", email)
-                .getResultList()
-                .isEmpty() ) {
-             throw new UniqueUserEmailException();
-         }
-    }
-
 }
