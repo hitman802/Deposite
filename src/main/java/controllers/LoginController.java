@@ -46,7 +46,7 @@ public class LoginController {
 
         securityService.autologin(userForm.getName(), userForm.getPasswordConfirm());
 
-        return "redirect:/welcome";
+        return "redirect:/index";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -59,10 +59,4 @@ public class LoginController {
 
         return "login";
     }
-
-    @RequestMapping(value = {"", "/welcome"}, method = RequestMethod.GET)
-    public String welcome(Model model) {
-        return "welcome";
-    }
-
 }

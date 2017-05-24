@@ -64,7 +64,7 @@
                 <div class="col-sm-6 col-sm-offset-3 form-box">
                     <div class="form-top">
                         <div class="form-top-left">
-                            <p>Enter your username and password to log on:</p>
+                            <p>Enter your username, password and email to register:</p>
                         </div>
                         <div class="form-top-right">
                             <i class="fa fa-key"></i>

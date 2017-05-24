@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Admin on 22.04.2017.
@@ -24,7 +25,14 @@ public class DepositeRepository {
     private EntityManager em;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Deposite findDeposite(Long id) {
+    public List<Deposite> findDepositesByUserName(String userName) {
+        return em.createQuery("SELECT d FROM Deposite d WHERE d.user = :userName")
+                .setParameter("userName", userName)
+                .getResultList();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Deposite findDepositeById(Long id) {
         Deposite deposite = em.find(Deposite.class, id);
         if( deposite == null ) {
             log.error("Cant find deposites by id " + id);
