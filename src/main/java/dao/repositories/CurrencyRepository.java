@@ -5,7 +5,6 @@ import dao.entities.Rate;
 import factory.CurrencyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +25,13 @@ public class CurrencyRepository {
     private EntityManager em;
     @Autowired
     private CurrencyFactory currencyFactory;
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Currency> loadAllCurrencies() {
+        return em.createQuery("SELECT c FROM Currency c")
+                .getResultList();
+    }
+
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void checkAndUpdateCurrencies(List<Rate> rates) {

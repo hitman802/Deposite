@@ -1,23 +1,16 @@
 package controllers;
 
 import dao.entities.Users;
+import dao.repositories.CurrencyRepository;
 import dao.repositories.UserRepository;
 import exceptions.UserNotFoundException;
-import factory.UserFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import service.interfaces.ISecurityService;
-import service.interfaces.IUserService;
-import validation.UserValidator;
 
 import java.security.Principal;
-import java.util.Optional;
 
 /**
  * Created by Admin on 29.04.2017.
@@ -27,9 +20,11 @@ import java.util.Optional;
 public class DepositController {
 
     private UserRepository userRepository;
+    private CurrencyRepository currencyRepository;
 
-    public DepositController(UserRepository userRepository) {
+    public DepositController(UserRepository userRepository, CurrencyRepository currencyRepository) {
         this.userRepository = userRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     @RequestMapping(value = {"", "/index"}, method = RequestMethod.GET)
@@ -44,6 +39,8 @@ public class DepositController {
             throw new UserNotFoundException();
         }
         model.addAttribute("user", user);
+        model.addAttribute("currencies", currencyRepository.loadAllCurrencies());
+
         return "index";
     }
 }

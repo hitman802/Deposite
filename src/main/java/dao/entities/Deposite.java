@@ -25,6 +25,9 @@ public class Deposite {
     @Column(name = "deposite_date_end")
     @Getter @Setter private Date endDate;
 
+    @Column(name = "deposite_sum")
+    @Getter @Setter private double sum;
+
     @OneToOne
     //@Column(name = "deposite_currency")
     @Setter @Getter private Currency currency;
