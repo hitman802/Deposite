@@ -26,16 +26,19 @@ import java.util.stream.Collectors;
 @Log4j
 public class AdminController {
 
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
     private RoleRepository roleRepository;
-    @Autowired
     private UserServiceImpl userService;
-    @Autowired
     private UserValidator userValidator;
-    @Autowired
     private UserRolesValidator userRolesValidator;
+
+    public AdminController(UserRepository userRepository, RoleRepository roleRepository, UserServiceImpl userService, UserValidator userValidator, UserRolesValidator userRolesValidator) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.userService = userService;
+        this.userValidator = userValidator;
+        this.userRolesValidator = userRolesValidator;
+    }
 
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/admin/user/list")

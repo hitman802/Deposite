@@ -17,9 +17,8 @@ public class Replenishment {
     @Column(name = "replenishment_id")
     @Setter @Getter private long id;
 
-    @Transient
-    //@ManyToOne
-    //@JoinColumn(name = "replenishment_currency", referencedColumnName = "currency_id")
+    @OneToOne
+    //@Column(name = "replenishment_currency")
     @Setter @Getter private Currency currency;
 
     @Column(name = "replenishment_sum")
@@ -28,8 +27,6 @@ public class Replenishment {
     @Column(name = "replenishment_date")
     @Setter @Getter Date date;
 
-    @Transient
-    //@ManyToOne
-    //@JoinColumn(name = "replenishment_deposite", referencedColumnName = "deposite_id")
+    @ManyToOne
     @Getter @Setter Deposite deposite;
 }

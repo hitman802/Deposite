@@ -25,13 +25,12 @@ public class Deposite {
     @Column(name = "deposite_date_end")
     @Getter @Setter private Date endDate;
 
-    @Transient
-    //@ManyToOne
-    //@JoinColumn(name = "deposite_currency", referencedColumnName = "currency_id")
+    @OneToOne
+    //@Column(name = "deposite_currency")
     @Setter @Getter private Currency currency;
 
-    //@OneToMany(mappedBy = "deposite")
-    @Transient
+    @OneToMany
+    @Column(name = "deposite_replenishment")
     @Setter @Getter private List<Replenishment> replenishments;
 
     @Column(name = "deposite_tax_on_percent")
@@ -39,4 +38,8 @@ public class Deposite {
 
     @Column(name = "deposite_rate")
     @Getter @Setter double depositeRate;
+
+    @OneToOne
+    //@Column(name = "deposite_user")
+    @Getter @Setter Users user;
 }

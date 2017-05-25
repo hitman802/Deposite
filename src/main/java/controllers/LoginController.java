@@ -19,14 +19,17 @@ import validation.UserValidator;
 @Controller
 public class LoginController {
 
-    @Autowired
     private IUserService userService;
-    @Autowired
     private ISecurityService securityService;
-    @Autowired
     private UserValidator userValidator;
-    @Autowired
     private UserFactory userFactory;
+
+    public LoginController(IUserService userService, ISecurityService securityService, UserValidator userValidator, UserFactory userFactory) {
+        this.userService = userService;
+        this.securityService = securityService;
+        this.userValidator = userValidator;
+        this.userFactory = userFactory;
+    }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(Model model) {
