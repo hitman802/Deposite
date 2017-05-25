@@ -46,6 +46,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/2.0.4/jquery.backstretch.min.js"></script>
     <script src="../../resources/js/scripts.js"></script>
 
+    <!-- combobox selector -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+    <!-- (Optional) Latest compiled and minified JavaScript translation files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/i18n/defaults-en_US.min.js"></script>
+    <!-- combobox selector -->
+
     <!--[if lt IE 10]>
     <script src="../../resources/js/placeholder.js"></script>
     <![endif]-->
@@ -121,17 +130,16 @@
                     </div>
                     <div class="form-group">
                         <input id="create_new_deposite_start_sum" type="text" class="form-control" value="start_sum">
-
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Currency
-                                <span class="caret"></span></button>
-                            <ul class="dropdown-menu">
-                                <c:forEach items="${currencies}" var="currency">
-                                    <li><a href="#">${currency.name}</a></li>
-                                </c:forEach>
-                            </ul>
-                        </div>
-
+                    </div>
+                    <div class="form-group">
+                        <select class="selectpicker" data-live-search="true" style="color: gold">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <!-- <c:forEach items="${currencies}" var="currency"> -->
+                            <!--    <option>${currency.name}</option>-->
+                            <!-- </c:forEach> -->
+                        </select>
                         <!-- <input id="create_new_deposite_currency" type="text" class="form-control" value="currency"> -->
                     </div>
                     <div class="form-group">
