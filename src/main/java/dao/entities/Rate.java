@@ -30,11 +30,11 @@ public class Rate {
     @Column(name = "rate_date")
     @Setter @Getter private Date date;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "rate_currency", referencedColumnName = "currency_id")
     @Setter @Getter private Currency currency;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "rate_ratesource", referencedColumnName = "ratesource_id")
     @Setter @Getter private RateSource source;
 }

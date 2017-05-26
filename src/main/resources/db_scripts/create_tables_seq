@@ -1,4 +1,12 @@
+DROP TABLE IF EXISTS Role CASCADE;
+DROP TABLE IF EXISTS UsersRole CASCADE;
+DROP TABLE IF EXISTS Currency CASCADE;
+DROP TABLE IF EXISTS RateSource CASCADE;
+DROP TABLE IF EXISTS Rate CASCADE;
+DROP TABLE IF EXISTS Replenishment CASCADE;
+DROP TABLE IF EXISTS Deposite CASCADE;
 DROP TABLE IF EXISTS Users CASCADE;
+
 CREATE TABLE IF NOT EXISTS Users (
   users_id SERIAL NOT NULL,
   users_name VARCHAR(32) NOT NULL,
@@ -7,14 +15,12 @@ CREATE TABLE IF NOT EXISTS Users (
   PRIMARY KEY (users_id)
 );
 
-DROP TABLE IF EXISTS Role CASCADE;
 CREATE TABLE IF NOT EXISTS Role (
   role_id SERIAL NOT NULL,
   role_name VARCHAR(12) NOT NULL UNIQUE,
   PRIMARY KEY (role_id)
 );
 
-DROP TABLE IF EXISTS UsersRole CASCADE;
 CREATE TABLE IF NOT EXISTS UsersRole (
   usersrole_user INT NOT NULL,
   usersrole_role INT NOT NULL,
@@ -22,21 +28,18 @@ CREATE TABLE IF NOT EXISTS UsersRole (
   FOREIGN KEY (usersrole_role) REFERENCES Role(role_id)
 );
 
-DROP TABLE IF EXISTS RateSource CASCADE;
 CREATE TABLE IF NOT EXISTS RateSource (
   ratesource_id SERIAL NOT NULL,
   ratesource_name VARCHAR(20) NOT NULL,
   PRIMARY KEY (ratesource_id)
 );
 
-DROP TABLE IF EXISTS Currency CASCADE;
 CREATE TABLE IF NOT EXISTS Currency (
   currency_id SERIAL NOT NULL,
   currency_name VARCHAR(6) NOT NULL UNIQUE,
   PRIMARY KEY (currency_id)
 );
 
-DROP TABLE IF EXISTS Rate CASCADE;
 CREATE TABLE IF NOT EXISTS Rate(
   rate_id SERIAL NOT NULL,
   rate_currency INT NOT NULL,
@@ -48,7 +51,7 @@ CREATE TABLE IF NOT EXISTS Rate(
   FOREIGN KEY (rate_ratesource) REFERENCES RateSource(ratesource_id)
 );
 
-DROP TABLE IF EXISTS Replenishment CASCADE;
+
 CREATE TABLE IF NOT EXISTS Replenishment(
   replenishment_id SERIAL NOT NULL,
   replenishment_currency INT NOT NULL,
@@ -58,13 +61,13 @@ CREATE TABLE IF NOT EXISTS Replenishment(
   FOREIGN KEY (replenishment_currency) REFERENCES Currency(currency_id)
 );
 
-DROP TABLE IF EXISTS Deposite CASCADE;
 CREATE TABLE IF NOT EXISTS Deposite (
   deposite_id SERIAL NOT NULL,
+  deposite_name VARCHAR(64) NOT NULL,
   deposite_date_start DATE NOT NULL,
   deposite_date_end DATE NOT NULL,
   deposite_currency INT NOT NULL,
-  deposite_replenishment INT NOT NULL,
+  deposite_replenishment INT,
   deposite_sum DECIMAL NOT NULL,
   deposite_tax_on_percent DECIMAL NOT NULL,
   deposite_rate DECIMAL NOT NULL,

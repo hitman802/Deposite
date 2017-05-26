@@ -19,6 +19,9 @@ public class Deposite {
     @Column(name = "deposite_id")
     @Setter @Getter private Long id;
 
+    @Column(name = "deposite_name")
+    @Getter @Setter private String name;
+
     @Column(name = "deposite_date_start")
     @Getter @Setter private Date startDate;
 
@@ -29,7 +32,7 @@ public class Deposite {
     @Getter @Setter private double sum;
 
     @OneToOne
-    //@Column(name = "deposite_currency")
+    @JoinColumn(name = "deposite_currency", referencedColumnName = "currency_id")
     @Setter @Getter private Currency currency;
 
     @OneToMany
@@ -42,7 +45,7 @@ public class Deposite {
     @Column(name = "deposite_rate")
     @Getter @Setter double depositeRate;
 
-    @OneToOne
-    //@Column(name = "deposite_user")
+    @ManyToOne
+    @JoinColumn(name = "deposite_user", referencedColumnName = "users_id")
     @Getter @Setter Users user;
 }

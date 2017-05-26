@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Admin on 22.04.2017.
@@ -59,6 +60,7 @@ public class DepositeRepository {
         Users user = userRepository.findUserByName(userName);
         Currency currency = currencyRepository.getCurrencyByName(currencyName);
 
+        deposite.setName(deposite_name);
         deposite.setStartDate(date_start);
         deposite.setEndDate(date_finish);
         deposite.setSum(sum);
@@ -66,7 +68,6 @@ public class DepositeRepository {
         deposite.setTaxOnPercents(tax_on_percent);
         deposite.setCurrency(currency);
         deposite.setUser(user);
-
-        user.getDeposits().add(deposite);
+        em.persist(deposite);
     }
 }

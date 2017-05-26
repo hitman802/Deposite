@@ -83,8 +83,11 @@
                 <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Email</th>
-                    <th>Roles</th>
+                    <th>Start sum</th>
+                    <th>Currency</th>
+                    <th>Start date</th>
+                    <th>End date</th>
+                    <th>Rate</th>
                     <th style="width: 36px;"></th>
                 </tr>
                 </thead>
