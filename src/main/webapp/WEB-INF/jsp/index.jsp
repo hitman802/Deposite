@@ -1,6 +1,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %><%--
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="option" uri="http://www.springframework.org/tags/form" %><%--
   Created by IntelliJ IDEA.
   User: SHonchar
   Date: 5/23/2017
@@ -131,16 +132,15 @@
                     <div class="form-group">
                         <input id="create_new_deposite_start_sum" type="text" class="form-control" value="start_sum">
                     </div>
-                    <div class="form-group">
-                        <select class="selectpicker" data-live-search="true" style="color: gold">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <!-- <c:forEach items="${currencies}" var="currency"> -->
-                            <!--    <option>${currency.name}</option>-->
-                            <!-- </c:forEach> -->
-                        </select>
-                        <!-- <input id="create_new_deposite_currency" type="text" class="form-control" value="currency"> -->
+                    <div class="combobox">
+                        <div class="form-group">
+                            <select class="selectpicker" data-live-search="true" id="create_new_deposite_currency">
+                                <c:forEach items="${currencies}" var="currency">
+                                    <option>${currency.name}</option>
+                                </c:forEach>
+                            </select>
+                            <!-- <input id="create_new_deposite_currency" type="text" class="form-control" value="currency"> -->
+                        </div>
                     </div>
                     <div class="form-group">
                         <input id="create_new_deposite_rate" type="text" class="form-control" value="rate">
@@ -148,8 +148,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                    <button class="btn btn-success" data-dismiss="modal" onclick='createNewDeposit($("input#create_new_deposite_name").val(),$("input#create_new_deposite_date_start").val(), $("input#create_new_deposite_date_finish").val(),$("input#create_new_deposite_start_sum").val(),$("input#create_new_deposite_currency").val(),$("input#create_new_deposite_rate").val(),$("input#create_new_deposite_tax_on_percent").val())'>Create</button>
+                    <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" data-dismiss="modal" onclick='createNewDeposit($("input#create_new_deposite_name").val(),$("input#create_new_deposite_date_start").val(), $("input#create_new_deposite_date_finish").val(),$("input#create_new_deposite_start_sum").val(),$("#create_new_deposite_currency option:selected").text(),$("input#create_new_deposite_rate").val(),$("input#create_new_deposite_tax_on_percent").val())'>Create</button>
                 </div>
             </div>
         </div>
@@ -164,7 +164,33 @@
 </html>
 <script type="text/javascript">
     function createNewDeposit(name, date_start, date_finish, start_sum, currency, rate, tax_on_percent) {
-        alert("name="+name+" date_start=" + date_start + " date_finish="+date_finish+" start_sum="+start_sum+" currency="+currency+" rate="+rate+" tax_on_percent="+tax_on_percent);
+        $.ajax(
+            { type: "GET"
+                , url: '/deposit/new'
+                , data:
+            {  name : name
+            , date_start: date_start
+            , date_finish: date_finish
+            , sum: start_sum
+            , rate: rate
+            , currency: currency
+            , tax_on_percent: tax_on_percent
+            }
+                , success:
+                    function() {
+                        toastr.options = toastrOptions_success;
+                        toastr.success('Deposit succefuly created');
+                    }
+                , error:
+                    function(xhr) {
+                        toastr.options = toastrOptions_failed;
+                        toastr.error(JSON.parse(xhr.responseText).message);
+                    }
+                , complete:
+                    function() {
+                    }
+            }
+        )
     }
     $(function(){
         $('#picker_date_start').datetimepicker({

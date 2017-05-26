@@ -89,3 +89,4 @@ INSERT INTO Role (role_name) VALUES
 ;
 INSERT INTO Users (users_name, users_password, users_email) VALUES ('sergeyg', '$2a$10$Vt5QkKovXyO63N5Xh1pC/OiEO38TeAO0.AIodw9h8x5H/6IIay1YW', 'sergeyg@fakemail.com');
 INSERT INTO UsersRole (usersrole_user, usersrole_role) VALUES (1,2),(1,1);
+INSERT INTO Currency (currency_name) VALUES ('UAH');

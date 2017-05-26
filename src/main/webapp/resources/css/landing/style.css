@@ -89,6 +89,13 @@ img { max-width: 100%; }
 	color: #fff;
 }
 
+.combobox {
+    text-align: left;
+}
+.combobox .text {
+    color: #ddd;
+}
+
 .top-content .text h1 { color: #fff; }
 
 .top-content .description {
