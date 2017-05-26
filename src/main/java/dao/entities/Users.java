@@ -34,7 +34,7 @@ public class Users {
     @Transient
     @Setter @Getter private String passwordConfirm;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     @Getter @Setter private Set<Deposite> deposits;
 
     //3rd table for many to many relation

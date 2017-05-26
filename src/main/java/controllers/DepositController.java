@@ -1,20 +1,34 @@
 package controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import dao.entities.Deposite;
+import dao.entities.Rate;
 import dao.entities.Users;
 import dao.repositories.CurrencyRepository;
 import dao.repositories.DepositeRepository;
 import dao.repositories.UserRepository;
 import exceptions.UserNotFoundException;
 import factory.DepositeFactory;
+import lombok.SneakyThrows;
+import org.codehaus.jackson.node.ObjectNode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Admin on 29.04.2017.
@@ -49,6 +63,21 @@ public class DepositController {
 
         return "index";
     }
+
+    @RequestMapping(value = "/deposit/get", method = RequestMethod.GET)
+    @ResponseBody
+    @SneakyThrows
+    public String getDepositsForUser(Principal principal) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        List<Deposite> deposites = depositeRepository.findDepositesByUserName(principal.getName());
+        Map<String, Object> deps = new HashMap<>();
+        deps.put("total", deposites.size());
+        deps.put("rows", deposites);
+        return mapper.writeValueAsString(deps);
+    }
+
 
     @RequestMapping(value = "/deposit/new", method = RequestMethod.GET)
     public String createDeposit(Principal principal,

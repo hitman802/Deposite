@@ -154,6 +154,12 @@
             <version>${spring-security-version}</version>
         </dependency>
         <!-- spring security -->
+
+        <!-- json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

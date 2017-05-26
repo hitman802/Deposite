@@ -39,7 +39,7 @@ public class DepositeRepository {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Deposite> findDepositesByUserName(String userName) {
-        return em.createQuery("SELECT d FROM Deposite d WHERE d.user = :userName")
+        return em.createQuery("SELECT d FROM Deposite d WHERE d.user.name = :userName")
                 .setParameter("userName", userName)
                 .getResultList();
     }

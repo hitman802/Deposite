@@ -1,11 +1,14 @@
 package dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Admin on 22.04.2017.
@@ -14,11 +17,13 @@ import java.util.List;
 @Table(name = "Deposite")
 public class Deposite {
 
+    @JsonProperty("id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "deposite_id")
     @Setter @Getter private Long id;
 
+    @JsonProperty("name")
     @Column(name = "deposite_name")
     @Getter @Setter private String name;
 
@@ -35,8 +40,7 @@ public class Deposite {
     @JoinColumn(name = "deposite_currency", referencedColumnName = "currency_id")
     @Setter @Getter private Currency currency;
 
-    @OneToMany
-    @Column(name = "deposite_replenishment")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "deposite")
     @Setter @Getter private List<Replenishment> replenishments;
 
     @Column(name = "deposite_tax_on_percent")
@@ -45,6 +49,7 @@ public class Deposite {
     @Column(name = "deposite_rate")
     @Getter @Setter double depositeRate;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "deposite_user", referencedColumnName = "users_id")
     @Getter @Setter Users user;

@@ -18,7 +18,7 @@ public class Replenishment {
     @Setter @Getter private long id;
 
     @OneToOne
-    //@Column(name = "replenishment_currency")
+    @JoinColumn(name = "replenishment_currency", referencedColumnName = "currency_id")
     @Setter @Getter private Currency currency;
 
     @Column(name = "replenishment_sum")
@@ -28,5 +28,6 @@ public class Replenishment {
     @Setter @Getter Date date;
 
     @ManyToOne
+    @JoinColumn(name = "replenishment_deposite", referencedColumnName = "deposite_id")
     @Getter @Setter Deposite deposite;
 }
