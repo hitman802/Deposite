@@ -21,6 +21,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -90,4 +91,9 @@ public class AppConfig {
         return viewResolver;
     }
     //to make jsp working
+
+    @Bean(name = "deposit")
+    public SimpleDateFormat simpleDateFormat() {
+        return new SimpleDateFormat("dd-MM-yyyy");
+    }
 }

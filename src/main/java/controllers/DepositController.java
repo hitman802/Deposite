@@ -1,21 +1,14 @@
 package controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import dao.entities.Deposite;
-import dao.entities.Rate;
 import dao.entities.Users;
 import dao.repositories.CurrencyRepository;
 import dao.repositories.DepositeRepository;
 import dao.repositories.UserRepository;
 import exceptions.UserNotFoundException;
-import factory.DepositeFactory;
 import lombok.SneakyThrows;
-import org.codehaus.jackson.node.ObjectNode;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,11 +34,14 @@ public class DepositController {
     private UserRepository userRepository;
     private CurrencyRepository currencyRepository;
     private DepositeRepository depositeRepository;
+    private SimpleDateFormat simpleDateFormat;
 
-    public DepositController(UserRepository userRepository, CurrencyRepository currencyRepository, DepositeRepository depositeRepository) {
+    public DepositController(UserRepository userRepository, CurrencyRepository currencyRepository,
+                             DepositeRepository depositeRepository, SimpleDateFormat simpleDateFormat) {
         this.userRepository = userRepository;
         this.currencyRepository = currencyRepository;
         this.depositeRepository = depositeRepository;
+        this.simpleDateFormat = simpleDateFormat;
     }
 
     @RequestMapping(value = {"", "/index"}, method = RequestMethod.GET)
@@ -72,7 +67,7 @@ public class DepositController {
     public String getDepositsForUser(Principal principal) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.setDateFormat( new SimpleDateFormat("dd-MM-yyyy"));
+        mapper.setDateFormat(simpleDateFormat);
 
         List<Deposite> deposites = depositeRepository.findDepositesByUserName(principal.getName());
         Map<String, Object> deps = new HashMap<>();
@@ -82,16 +77,48 @@ public class DepositController {
     }
 
     @RequestMapping(value = "/deposit/update", method = RequestMethod.GET)
+    @SneakyThrows
     public String updateDeposit(Principal principal,
-        @RequestParam(value = "id") Long id,
-        @RequestParam(value = "name", required = false) String name,
-        @RequestParam(value = "date_start", required = false) Date date_start,
-        @RequestParam(value = "date_finish", required = false) Date date_finish,
-        @RequestParam(value = "sum", required = false) Double sum,
-        @RequestParam(value = "rate", required = false) Double rate,
-        @RequestParam(value = "currency", required = false) String currency,
-        @RequestParam(value = "tax_on_percent", required = false) Double tax_on_percent
+        @RequestParam(value = "pk") Long id,
+        @RequestParam(value = "value") String value,
+        @RequestParam(value = "name") String keyName
     ) {
+
+        String name = null, currency = null;
+        Date date_start = null, date_finish = null;
+        Double sum = null, rate = null, tax_on_percent = null;
+
+        switch(keyName) {
+            case "name": {
+                name = value;
+                break;
+            }
+            case "currency": {
+                currency = value;
+                break;
+            }
+            case "startDate": {
+                date_start = simpleDateFormat.parse(value);
+                break;
+            }
+            case "endDate": {
+                date_finish = simpleDateFormat.parse(value);
+                break;
+            }
+            case "sum": {
+                sum = Double.parseDouble(value);
+                break;
+            }
+            case "depositeRate": {
+                rate = Double.parseDouble(value);
+                break;
+            }
+            case "taxOnPercents": {
+                tax_on_percent = Double.parseDouble(value);
+                break;
+            }
+            default: break;
+        }
 
         depositeRepository.updateDeposite(id, principal.getName(),
                 name, date_start, date_finish, sum, rate, currency, tax_on_percent);

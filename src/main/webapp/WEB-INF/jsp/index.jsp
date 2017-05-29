@@ -103,7 +103,7 @@
                data-minimum-count-columns="2"
                data-show-pagination-switch="false"
                data-pagination="true"
-               data-id-field="name"
+               data-id-field="id"
                data-page-list="[10, 25, 50, 100, ALL]"
                data-show-footer="false"
                data-side-pagination="server"
@@ -180,6 +180,25 @@
 
 </html>
 <script type="text/javascript">
+    var toastrOptions_success =
+        { closeButton: true
+        , showMethod: 'fadeIn'
+        , timeOut: 1000
+        , extendedTimeOut: 1000
+        , closeMethod: 'fadeOut'
+        , closeDuration: 1000
+        , positionClass: 'toast-bottom-right'
+        }
+      , toastrOptions_failed =
+        { closeButton: true
+        , showMethod: 'fadeIn'
+        , timeOut: 2000
+        , extendedTimeOut: 2000
+        , closeMethod: 'fadeOut'
+        , closeDuration: 2000
+        , positionClass: 'toast-bottom-right'
+        }
+            ;
     function createNewDeposit(name, date_start, date_finish, start_sum, currency, rate, tax_on_percent) {
         $.ajax(
             { type: "GET"
@@ -197,6 +216,7 @@
                     function() {
                         toastr.options = toastrOptions_success;
                         toastr.success('Deposit succefuly created');
+                        $('#table').bootstrapTable('refresh');
                     }
                 , error:
                     function(xhr) {
@@ -233,6 +253,15 @@
                   , align: 'center'
                   , valign: 'middle'
                   }
+                , { title: 'Deposit id'
+                  , field: 'id'
+                  , rowspan: 2
+                  , align: 'center'
+                  , valign: 'middle'
+                  , sortable: false
+                  , footerFormatter: totalTextFormatter
+                  , visible: false
+                  }
                 , { title: 'Deposit name'
                   , field: 'name'
                   , rowspan: 2
@@ -240,6 +269,13 @@
                   , valign: 'middle'
                   , sortable: true
                   , footerFormatter: totalTextFormatter
+                  , editable:
+                    { type: 'text'
+                    , url: 'deposit/update'
+                    , ajaxOptions:
+                      { method: 'get'
+                      }
+                    }
                   }
                 , { title: 'Deposit detail'
                   , colspan: 7
@@ -254,19 +290,8 @@
                     , url: 'deposit/update'
                     , ajaxOptions:
                       { method: 'get'
-                      , queryParams: function(p) {
-                        return { id: 111
-                        , sum: 222
-                        }
-                        }
                       }
-                        , queryParams: function(p) {
-                        return { id: 333
-                            , sum: 444
-                        }
                     }
-                    }
-
                   , footerFormatter: totalNameFormatter
                   , align: 'center'
                   }
@@ -277,6 +302,10 @@
                   , editable:
                     { type: 'text'
                     , title: 'Currency'
+                    , url: 'deposit/update'
+                    , ajaxOptions:
+                      { method: 'get'
+                      }
                     , validate:
                       function (value) {
                           value = $.trim(value);
@@ -300,6 +329,13 @@
                   , editable: true
                   , footerFormatter: totalNameFormatter
                   , align: 'center'
+                  , editable:
+                    { type: 'text'
+                    , url: 'deposit/update'
+                    , ajaxOptions:
+                      { method: 'get'
+                      }
+                    }
                   }
                 , { field: 'endDate'
                   , title: 'End date'
@@ -307,20 +343,39 @@
                   , editable: true
                   , footerFormatter: totalNameFormatter
                   , align: 'center'
+                  , editable:
+                    { type: 'text'
+                    , url: 'deposit/update'
+                    , ajaxOptions:
+                      { method: 'get'
+                      }
+                    }
                   }
                 , { field: 'depositeRate'
                   , title: 'Rate, %'
                   , sortable: true
-                  , editable: true
                   , footerFormatter: totalNameFormatter
                   , align: 'center'
+                  , editable:
+                    { type: 'text'
+                    , url: 'deposit/update'
+                    , ajaxOptions:
+                      { method: 'get'
+                      }
+                    }
                   }
                 , { field: 'taxOnPercents'
                   , title: 'Tax on percents, %'
                   , sortable: true
-                  , editable: true
                   , footerFormatter: totalNameFormatter
                   , align: 'center'
+                  , editable:
+                    { type: 'text'
+                    , url: 'deposit/update'
+                    , ajaxOptions:
+                      { method: 'get'
+                      }
+                    }
                   }
                 , { field: 'operate'
                   , title: 'Item Operate'
