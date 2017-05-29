@@ -178,7 +178,6 @@
 
 </body>
 
-</html>
 <script type="text/javascript">
     var toastrOptions_success =
         { closeButton: true
@@ -198,7 +197,8 @@
         , closeDuration: 2000
         , positionClass: 'toast-bottom-right'
         }
-            ;
+      , currenciesForField = []
+        ;
     function createNewDeposit(name, date_start, date_finish, start_sum, currency, rate, tax_on_percent) {
         $.ajax(
             { type: "GET"
@@ -300,7 +300,8 @@
                   , sortable: true
                   , align: 'center'
                   , editable:
-                    { type: 'text'
+                    { type: 'select'
+                    , source: currenciesForField
                     , title: 'Currency'
                     , url: 'deposit/update'
                     , ajaxOptions:
@@ -312,13 +313,7 @@
                           if (!value) {
                               return 'This field is required';
                           }
-                          if (!/^\$/.test(value)) {
-                              return 'This field needs to start width $.'
-                          }
-                          var data = $table.bootstrapTable('getData'),
-                                index = $(this).parents('tr').data('index');
-                            console.log(data[index]);
-                            return '';
+                          return '';
                         }
                     }
                   , footerFormatter: totalPriceFormatter
@@ -326,7 +321,6 @@
                 , { field: 'startDate'
                   , title: 'Start date'
                   , sortable: true
-                  , editable: true
                   , footerFormatter: totalNameFormatter
                   , align: 'center'
                   , editable:
@@ -340,7 +334,6 @@
                 , { field: 'endDate'
                   , title: 'End date'
                   , sortable: true
-                  , editable: true
                   , footerFormatter: totalNameFormatter
                   , align: 'center'
                   , editable:
@@ -398,12 +391,6 @@
             // push or splice the selections if you want to save all data selections
         });
         $table.on('expand-row.bs.table', function (e, index, row, $detail) {
-            if (index % 2 == 1) {
-                $detail.html('Loading from ajax request...');
-                $.get('LICENSE', function (res) {
-                    $detail.html(res.replace(/\n/g, '<br>'));
-                });
-            }
         });
         $table.on('all.bs.table', function (e, name, args) {
             console.log(name, args);
@@ -532,4 +519,11 @@
         // We handle everything using the script element injection
         return undefined;
     }
+
+    $(function addCurrencies() {
+        <c:forEach items="${currencies}" var="currency">
+            currenciesForField.push({value:'${currency.name}',text:'${currency.name}'});
+        </c:forEach>
+    })
 </script>
+</html>

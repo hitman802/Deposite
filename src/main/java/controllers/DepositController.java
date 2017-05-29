@@ -93,7 +93,7 @@ public class DepositController {
                 name = value;
                 break;
             }
-            case "currency": {
+            case "currency.name": {
                 currency = value;
                 break;
             }
