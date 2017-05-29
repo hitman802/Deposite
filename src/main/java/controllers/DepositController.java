@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,6 +72,7 @@ public class DepositController {
     public String getDepositsForUser(Principal principal) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setDateFormat( new SimpleDateFormat("dd-MM-yyyy"));
 
         List<Deposite> deposites = depositeRepository.findDepositesByUserName(principal.getName());
         Map<String, Object> deps = new HashMap<>();
@@ -78,6 +81,23 @@ public class DepositController {
         return mapper.writeValueAsString(deps);
     }
 
+    @RequestMapping(value = "/deposit/update", method = RequestMethod.GET)
+    public String updateDeposit(Principal principal,
+        @RequestParam(value = "id") Long id,
+        @RequestParam(value = "name", required = false) String name,
+        @RequestParam(value = "date_start", required = false) Date date_start,
+        @RequestParam(value = "date_finish", required = false) Date date_finish,
+        @RequestParam(value = "sum", required = false) Double sum,
+        @RequestParam(value = "rate", required = false) Double rate,
+        @RequestParam(value = "currency", required = false) String currency,
+        @RequestParam(value = "tax_on_percent", required = false) Double tax_on_percent
+    ) {
+
+        depositeRepository.updateDeposite(id, principal.getName(),
+                name, date_start, date_finish, sum, rate, currency, tax_on_percent);
+
+        return "index";
+    }
 
     @RequestMapping(value = "/deposit/new", method = RequestMethod.GET)
     public String createDeposit(Principal principal,

@@ -97,11 +97,11 @@
                data-show-refresh="true"
                data-show-toggle="true"
                data-show-columns="true"
-               data-show-export="true"
+               data-show-export="false"
                data-detail-view="true"
                data-detail-formatter="detailFormatter"
                data-minimum-count-columns="2"
-               data-show-pagination-switch="true"
+               data-show-pagination-switch="false"
                data-pagination="true"
                data-id-field="name"
                data-page-list="[10, 25, 50, 100, ALL]"
@@ -111,7 +111,6 @@
                data-response-handler="responseHandler">
         </table>
     </div>
-
 
     <div id="modalNewDeposite" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -227,68 +226,110 @@
     function initTable() {
         $table.bootstrapTable({
             height: getHeight(),
-            columns: [
-                [
-                    {
-                        field: 'state',
-                        checkbox: true,
-                        rowspan: 2,
-                        align: 'center',
-                        valign: 'middle'
-                    }, {
-                    title: 'Deposit name',
-                    field: 'name',
-                    rowspan: 2,
-                    align: 'center',
-                    valign: 'middle',
-                    sortable: true,
-                    footerFormatter: totalTextFormatter
-                }, {
-                    title: 'Deposit detail',
-                    colspan: 3,
-                    align: 'center'
-                }
-                ],
-                [
-                    {
-                        field: 'sum',
-                        title: 'Start sum',
-                        sortable: true,
-                        editable: true,
-                        footerFormatter: totalNameFormatter,
-                        align: 'center'
-                    }, {
-                    field: 'currency.name',
-                    title: 'Currency',
-                    sortable: true,
-                    align: 'center',
-                    editable: {
-                        type: 'text',
-                        title: 'Currency',
-                        validate: function (value) {
-                            value = $.trim(value);
-                            if (!value) {
-                                return 'This field is required';
-                            }
-                            if (!/^\$/.test(value)) {
-                                return 'This field needs to start width $.'
-                            }
-                            var data = $table.bootstrapTable('getData'),
+            columns:
+              [ [ { field: 'state'
+                  , checkbox: true
+                  , rowspan: 2
+                  , align: 'center'
+                  , valign: 'middle'
+                  }
+                , { title: 'Deposit name'
+                  , field: 'name'
+                  , rowspan: 2
+                  , align: 'center'
+                  , valign: 'middle'
+                  , sortable: true
+                  , footerFormatter: totalTextFormatter
+                  }
+                , { title: 'Deposit detail'
+                  , colspan: 7
+                  , align: 'center'
+                  }
+                ]
+              , [ { field: 'sum'
+                  , title: 'Start sum'
+                  , sortable: true
+                  , editable:
+                    { type: 'text'
+                    , url: 'deposit/update'
+                    , ajaxOptions:
+                      { method: 'get'
+                      , queryParams: function(p) {
+                        return { id: 111
+                        , sum: 222
+                        }
+                        }
+                      }
+                        , queryParams: function(p) {
+                        return { id: 333
+                            , sum: 444
+                        }
+                    }
+                    }
+
+                  , footerFormatter: totalNameFormatter
+                  , align: 'center'
+                  }
+                , { field: 'currency.name'
+                  , title: 'Currency'
+                  , sortable: true
+                  , align: 'center'
+                  , editable:
+                    { type: 'text'
+                    , title: 'Currency'
+                    , validate:
+                      function (value) {
+                          value = $.trim(value);
+                          if (!value) {
+                              return 'This field is required';
+                          }
+                          if (!/^\$/.test(value)) {
+                              return 'This field needs to start width $.'
+                          }
+                          var data = $table.bootstrapTable('getData'),
                                 index = $(this).parents('tr').data('index');
                             console.log(data[index]);
                             return '';
                         }
-                    },
-                    footerFormatter: totalPriceFormatter
-                }, {
-                    field: 'operate',
-                    title: 'Item Operate',
-                    align: 'center',
-                    events: operateEvents,
-                    formatter: operateFormatter
-                }
+                    }
+                  , footerFormatter: totalPriceFormatter
+                  }
+                , { field: 'startDate'
+                  , title: 'Start date'
+                  , sortable: true
+                  , editable: true
+                  , footerFormatter: totalNameFormatter
+                  , align: 'center'
+                  }
+                , { field: 'endDate'
+                  , title: 'End date'
+                  , sortable: true
+                  , editable: true
+                  , footerFormatter: totalNameFormatter
+                  , align: 'center'
+                  }
+                , { field: 'depositeRate'
+                  , title: 'Rate, %'
+                  , sortable: true
+                  , editable: true
+                  , footerFormatter: totalNameFormatter
+                  , align: 'center'
+                  }
+                , { field: 'taxOnPercents'
+                  , title: 'Tax on percents, %'
+                  , sortable: true
+                  , editable: true
+                  , footerFormatter: totalNameFormatter
+                  , align: 'center'
+                  }
+                , { field: 'operate'
+                  , title: 'Item Operate'
+                  , align: 'center'
+                  , events: operateEvents
+                  , formatter: operateFormatter
+                  }
                 ]
-            ]
+              ]
         });
         // sometimes footer render error.
         setTimeout(function () {

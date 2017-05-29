@@ -1,5 +1,6 @@
 package dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -29,6 +30,7 @@ public class Deposite {
 
     @Column(name = "deposite_date_start")
     @Getter @Setter private Date startDate;
+
 
     @Column(name = "deposite_date_end")
     @Getter @Setter private Date endDate;
