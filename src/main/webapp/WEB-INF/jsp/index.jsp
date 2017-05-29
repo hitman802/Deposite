@@ -421,6 +421,9 @@
         return res;
     }
     function detailFormatter(index, row) {
+
+        alert("row=" + JSON.stringify(row))
+
         var html = [];
         $.each(row, function (key, value) {
             html.push('<p><b>' + key + ':</b> ' + value + '</p>');
