@@ -3,6 +3,7 @@ package dao.entities;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.data.jpa.repository.*;
 
 import javax.persistence.*;
 import java.util.Set;

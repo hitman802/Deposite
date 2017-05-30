@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DepositOperationsFactory {
     public DepositOperation create() {
-        return new DepositOperation(depositOperationsFactory);
+        return new DepositOperation();
     }
 }

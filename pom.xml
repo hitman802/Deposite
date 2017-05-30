@@ -160,6 +160,15 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
         </dependency>
+
+        <!-- to better logging for database queries-->
+        <dependency>
+            <groupId>com.googlecode.log4jdbc</groupId>
+            <artifactId>log4jdbc</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!-- to better logging for database queries-->
+
     </dependencies>
 
     <build>

@@ -1,21 +1,11 @@
 package initializer;
 
 
-import org.apache.catalina.Context;
-import org.apache.catalina.Manager;
-import org.apache.catalina.session.PersistentManager;
-import org.apache.catalina.session.StandardManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -54,8 +44,12 @@ public class AppConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        /*when log4jdbc enabled*/
+        dataSource.setDriverClassName("net.sf.log4jdbc.DriverSpy");
+        dataSource.setUrl("jdbc:log4jdbc:postgresql://localhost:5432/DepositesDB");
+        /*regular driver
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/DepositesDB");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/DepositesDB");*/
         dataSource.setUsername("postgres");
         dataSource.setPassword("postgres");
         return dataSource;
