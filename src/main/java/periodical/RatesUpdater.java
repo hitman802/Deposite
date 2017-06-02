@@ -3,11 +3,13 @@ package periodical;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.entities.Currency;
+import dao.entities.Rate;
 import dao.entities.RateSource;
 import dao.repositories.CurrencyRepository;
 import dao.repositories.RateSourceRepository;
 import dao.repositories.RatesRepository;
-import dao.entities.Rate;
+import factory.RateSourceFactory;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ public class RatesUpdater implements Runnable {
     private RatesRepository ratesRepository;
     @Autowired
     private RateSourceRepository rateSourceRepository;
+    @Autowired
+    private RateSourceFactory rateSourceFactory;
 
     @Value("${ratesUpdateInterval}")
     private long interval;
@@ -67,8 +71,10 @@ public class RatesUpdater implements Runnable {
                     .filter(a-> (a.getName() != null && !a.getName().trim().isEmpty()))
                     .collect(Collectors.toList());
             currencyRepository.checkAndUpdateCurrencies(rates);
-            RateSource rateSource = rateSourceRepository.updateSource("NBY");
-            ratesRepository.updateRates(rates, rateSource);
+
+            RateSource rateSource = checkAndUpdateRateSource("NBY");
+
+            updateRates(rates, rateSource);
 
             log.info("Update rates finished");
         } catch(Exception e) {
@@ -89,8 +95,41 @@ public class RatesUpdater implements Runnable {
         log.info("Shutting down complete");
     }
 
+    private void updateRates(List<Rate> rates, RateSource rateSource) {
+        rates.forEach( rate -> {
+
+            String currencyName = rate.getName();
+            Date date = new Date();
+
+            //check if rate already exist on given date, if yes - skip
+            if( ratesRepository.findByCurrency_Name_AndDate(currencyName, date) != null ) {
+                return;
+            }
+
+            Currency currency = currencyRepository.getCurrencyByName(currencyName);
+            if( currency == null ) {
+                log.error("Cant find currency in db " + currencyName);
+                return;
+            }
+            rate.setCurrency(currency);
+            rate.setDate(date);
+            rate.setSource(rateSource);
+            log.info("Processing " + rate);
+            ratesRepository.save(rate);
+        });
+    }
+
     private String getCurrentDate() {
         SimpleDateFormat dt = new SimpleDateFormat("YYYYMMdd");
         return dt.format(new Date());
+    }
+
+    private RateSource checkAndUpdateRateSource(String sourceName) {
+        RateSource rateSource = rateSourceRepository.findByName(sourceName);
+        if( rateSource == null ) {
+            rateSource = rateSourceFactory.create();
+            rateSourceRepository.save(rateSource);
+        }
+        return rateSource;
     }
 }

@@ -1,11 +1,15 @@
 package initializer;
 
 
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.postgresql.Driver;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -13,6 +17,7 @@ import org.springframework.web.servlet.view.JstlView;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import java.text.SimpleDateFormat;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -25,6 +30,7 @@ import java.util.concurrent.ScheduledExecutorService;
 })
 @ComponentScan({"initializer", "periodical", "dao", "factory", "service", "controllers", "validation"})
 @EnableTransactionManagement
+@EnableJpaRepositories(basePackages = "dao.repositories")
 public class AppConfig {
 
     //to read property files
@@ -40,41 +46,67 @@ public class AppConfig {
         return Executors.newSingleThreadScheduledExecutor();
     }
 
-    //to enable jpa and transactions
+    /*spring data*/
     @Bean
-    public DataSource dataSource() {
+    public DriverManagerDataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        /*when log4jdbc enabled*/
-        dataSource.setDriverClassName("net.sf.log4jdbc.DriverSpy");
-        dataSource.setUrl("jdbc:log4jdbc:postgresql://localhost:5432/DepositesDB");
-        /*regular driver
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/DepositesDB");*/
+        dataSource.setDriverClassName(Driver.class.getName());
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/DepositesDB");
         dataSource.setUsername("postgres");
         dataSource.setPassword("postgres");
         return dataSource;
     }
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean emFactory = new LocalContainerEntityManagerFactoryBean();
+        emFactory.setDataSource(dataSource());
+        return emFactory;
+    }
+    @Bean
+    public JpaTransactionManager jpaTransactionManager(){
+        JpaTransactionManager jpa = new JpaTransactionManager();
+        jpa.setDataSource(dataSource());
+        jpa.setEntityManagerFactory(entityManagerFactory().getObject());
+        return jpa;
+    }
+    /*spring data*/
 
+
+/*
+    to enable jpa and transactions
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        //when log4jdbc enabled
+        dataSource.setDriverClassName("net.sf.log4jdbc.DriverSpy");
+        dataSource.setUrl("jdbc:log4jdbc:postgresql://localhost:5432/DepositesDB");
+        //when log4jdbc enabled
+        //regular driver
+        //dataSource.setDriverClassName("org.postgresql.Driver");
+        //dataSource.setUrl("jdbc:postgresql://localhost:5432/DepositesDB");
+        //regular driver
+        dataSource.setUsername("postgres");
+        dataSource.setPassword("postgres");
+        return dataSource;
+    }
     @Bean
     public EntityManager entityManager() {
         return entityManagerFactory().getObject().createEntityManager();
     }
-
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
         return em;
     }
-
     @Bean
     public JpaTransactionManager jpaTransactionManager(){
         JpaTransactionManager jpa = new JpaTransactionManager();
         jpa.setDataSource(dataSource());
         return jpa;
     }
-    //to enable jpa
-
+    to enable jpa
+*/
     //to make jsp working
     @Bean
     public InternalResourceViewResolver viewResolver() {
