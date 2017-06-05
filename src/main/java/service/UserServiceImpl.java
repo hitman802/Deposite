@@ -1,5 +1,6 @@
 package service;
 
+import dao.entities.Role;
 import dao.entities.Users;
 import dao.repositories.RoleRepository;
 import dao.repositories.UserRepository;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Admin on 30.04.2017.
@@ -16,23 +19,27 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements IUserService {
 
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
     @Override
     public void save(Users user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRoles(new HashSet<>(roleRepository.loadAll()));
-        userRepository.saveUser(user);
+        user.setRoles(StreamSupport.stream(roleRepository.findAll().spliterator(), false).collect(Collectors.toSet()));
+        userRepository.save(user);
     }
 
     @Override
     public Users findByUsername(String username) {
-        return userRepository.loadUserByName(username);
+        return userRepository.findByName(username);
     }
 
     public String encodePassword(String passwordStr) {

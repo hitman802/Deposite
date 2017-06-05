@@ -7,7 +7,11 @@ import dao.entities.Users;
 import dao.repositories.CurrencyRepository;
 import dao.repositories.DepositeRepository;
 import dao.repositories.UserRepository;
+import deposit.DepositCalculator;
+import exceptions.DepositNotFoundException;
+import exceptions.OperationNotAllowedException;
 import exceptions.UserNotFoundException;
+import factory.DepositeFactory;
 import lombok.SneakyThrows;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -19,10 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Admin on 29.04.2017.
@@ -35,13 +36,17 @@ public class DepositController {
     private CurrencyRepository currencyRepository;
     private DepositeRepository depositeRepository;
     private SimpleDateFormat simpleDateFormat;
+    private DepositeFactory depositeFactory;
+    private DepositCalculator depositCalculator;
 
     public DepositController(UserRepository userRepository, CurrencyRepository currencyRepository,
-                             DepositeRepository depositeRepository, SimpleDateFormat simpleDateFormat) {
+                             DepositeRepository depositeRepository, SimpleDateFormat simpleDateFormat, DepositeFactory depositeFactory, DepositCalculator depositCalculator) {
         this.userRepository = userRepository;
         this.currencyRepository = currencyRepository;
         this.depositeRepository = depositeRepository;
         this.simpleDateFormat = simpleDateFormat;
+        this.depositeFactory = depositeFactory;
+        this.depositCalculator = depositCalculator;
     }
 
     @RequestMapping(value = {"", "/index"}, method = RequestMethod.GET)
@@ -51,12 +56,12 @@ public class DepositController {
             throw new UserNotFoundException();
         }
 
-        Users user = userRepository.findUserByName(userName);
+        Users user = userRepository.findByName(userName);
         if( user == null ) {
             throw new UserNotFoundException();
         }
         model.addAttribute("user", user);
-        model.addAttribute("currencies", currencyRepository.loadAllCurrencies());
+        model.addAttribute("currencies", currencyRepository.findAll());
 
         return "index";
     }
@@ -69,11 +74,41 @@ public class DepositController {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.setDateFormat(simpleDateFormat);
 
-        List<Deposite> deposites = depositeRepository.findDepositesByUserName(principal.getName());
+        List<Deposite> deposites = depositeRepository.findByUser_Name(principal.getName());
+
+        deposites.forEach(depositCalculator::generateDepositOperations);
+
         Map<String, Object> deps = new HashMap<>();
         deps.put("total", deposites.size());
         deps.put("rows", deposites);
         return mapper.writeValueAsString(deps);
+    }
+
+    @RequestMapping(value = "/deposit/deleteFew", method = RequestMethod.GET)
+    public String deleteDeposit(Principal principal,
+        @RequestParam(value = "id") Long[] ids) {
+
+        String currentUser = principal.getName();
+        List<Deposite> deposites = depositeRepository.findByIdIn(Arrays.asList(ids));
+        deposites.forEach(deposite -> {
+            if( !deposite.getUser().getName().equals(currentUser) ) {
+                throw new OperationNotAllowedException();
+            }
+        });
+        depositeRepository.delete(deposites);
+        return "index";
+    }
+
+    @RequestMapping(value = "/deposit/delete", method = RequestMethod.GET)
+    public String deleteDeposit(Principal principal,
+        @RequestParam(value = "id") Long id) {
+        Deposite deposite = depositeRepository.findOne(id);
+        Optional.ofNullable(deposite).orElseThrow(DepositNotFoundException::new);
+        if ( !deposite.getUser().getName().equals(principal.getName()) ) {
+            throw new OperationNotAllowedException();
+        };
+        depositeRepository.delete(id);
+        return "index";
     }
 
     @RequestMapping(value = "/deposit/update", method = RequestMethod.GET)
@@ -120,8 +155,10 @@ public class DepositController {
             default: break;
         }
 
-        depositeRepository.updateDeposite(id, principal.getName(),
+        Deposite deposite = depositeRepository.findOne(id);
+        setDepositeFields(deposite, principal.getName(),
                 name, date_start, date_finish, sum, rate, currency, tax_on_percent);
+        depositeRepository.save(deposite);
 
         return "index";
     }
@@ -136,8 +173,21 @@ public class DepositController {
         @RequestParam(value = "currency") String currency,
         @RequestParam(value = "tax_on_percent") Double tax_on_percent
     ) {
-        depositeRepository.addDeposite(principal.getName(), name, date_start,
-                date_finish, sum, rate, currency, tax_on_percent);
+        Deposite deposite = depositeFactory.create();
+        setDepositeFields(deposite, principal.getName(), name, date_start, date_finish, sum, rate, currency, tax_on_percent);
+        depositeRepository.save(deposite);
         return "index";
+    }
+
+    private void setDepositeFields(Deposite deposite, String userName, String deposite_name, Date date_start, Date date_finish,
+                                       Double sum, Double rate, String currencyName, Double tax_on_percent) {
+        Optional.ofNullable(userName).ifPresent(usrName -> deposite.setUser(userRepository.findByName(userName)));
+        Optional.ofNullable(deposite_name).ifPresent(deposite::setName);
+        Optional.ofNullable(date_start).ifPresent(deposite::setStartDate);
+        Optional.ofNullable(date_finish).ifPresent(deposite::setEndDate);
+        Optional.ofNullable(sum).ifPresent(deposite::setSum);
+        Optional.ofNullable(rate).ifPresent(deposite::setDepositeRate);
+        Optional.ofNullable(tax_on_percent).ifPresent(deposite::setTaxOnPercents);
+        Optional.ofNullable(currencyName).ifPresent(currName -> deposite.setCurrency(currencyRepository.findByName(currencyName)));
     }
 }

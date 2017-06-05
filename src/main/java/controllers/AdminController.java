@@ -4,10 +4,12 @@ import dao.entities.Role;
 import dao.entities.Users;
 import dao.repositories.RoleRepository;
 import dao.repositories.UserRepository;
+import factory.UserFactory;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,6 +20,7 @@ import validation.UserValidator;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Admin on 02.05.2017.
@@ -31,21 +34,23 @@ public class AdminController {
     private UserServiceImpl userService;
     private UserValidator userValidator;
     private UserRolesValidator userRolesValidator;
+    private UserFactory userFactory;
 
-    public AdminController(UserRepository userRepository, RoleRepository roleRepository, UserServiceImpl userService, UserValidator userValidator, UserRolesValidator userRolesValidator) {
+    public AdminController(UserRepository userRepository, RoleRepository roleRepository, UserServiceImpl userService, UserValidator userValidator, UserRolesValidator userRolesValidator, UserFactory userFactory) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userService = userService;
         this.userValidator = userValidator;
         this.userRolesValidator = userRolesValidator;
+        this.userFactory = userFactory;
     }
 
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/admin/user/list")
     public String usersList(Model model) {
-        Collection<Users> users = userRepository.loadAllUsers();
+        List<Users> users = StreamSupport.stream(userRepository.findAll().spliterator(), false).collect(Collectors.toList());
         model.addAttribute("users", users.stream().sorted(Comparator.comparing(Users::getName)).collect(Collectors.toList()));
-        model.addAttribute("roles", FormatUtils.formatRolesFromDBtoView(roleRepository.loadAll()).stream().sorted().collect(Collectors.toList()));
+        model.addAttribute("roles", FormatUtils.formatRolesFromDBtoView(StreamSupport.stream(roleRepository.findAll().spliterator(), false).collect(Collectors.toList())).stream().sorted().collect(Collectors.toList()));
         model.addAttribute("usersroles", createUsersRolesMap(users));
         return "admin_user_list";
     }
@@ -53,8 +58,8 @@ public class AdminController {
     @Secured("ROLE_ADMIN")
     @RequestMapping("/admin/user/edit/{userName}")
     public String pageWithUserRoles(Model model, @PathVariable String userName) {
-        model.addAttribute("userForm", userRepository.findUserByName(userName));
-        model.addAttribute("allRoles", roleRepository.loadAll());
+        model.addAttribute("userForm", userRepository.findByName(userName));
+        model.addAttribute("allRoles", roleRepository.findAll());
         return "admin_user_edit";
     }
 
@@ -68,7 +73,7 @@ public class AdminController {
 
         //check user name and email uniqueness
         userValidator.validateUserNameAndEmail(id, name, email);
-        userRepository.updateUser(id, name, email, FormatUtils.formatRolesFromViewToDB(Arrays.asList(roles)));
+        updateUser(id, name, email, FormatUtils.formatRolesFromViewToDB(Arrays.asList(roles)));
 
         return new ModelAndView("redirect:/admin/user/list");
     }
@@ -76,7 +81,7 @@ public class AdminController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(value="/admin/user/delete",method = RequestMethod.GET)
     public ModelAndView delete(@RequestParam(value = "id") Long id){
-        userRepository.deleteUser(id);
+        userRepository.delete(id);
         return new ModelAndView("redirect:/admin/user/list");
     }
 
@@ -91,7 +96,7 @@ public class AdminController {
         userValidator.validateUserNameAndEmail(name, email);
         userRolesValidator.validateRoles(roles);
 
-        userRepository.addUser(name, userService.encodePassword(password), email, FormatUtils.formatRolesFromViewToDB(Arrays.asList(roles)));
+        addUser(name, userService.encodePassword(password), email, FormatUtils.formatRolesFromViewToDB(Arrays.asList(roles)));
         return new ModelAndView("redirect:/admin/user/list");
     }
 
@@ -102,4 +107,21 @@ public class AdminController {
         return userRoles;
     }
 
+    @Transactional
+    private void updateUser(Long id, String name, String email, List<String> roles) {
+        Users user = userRepository.findOne(id);
+        user.setName(name);
+        user.setEmail(email);
+        user.setRoles(roleRepository.findByNameIn(roles));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    private void  addUser(String name, String password, String email, List<String> roles) {
+        Users user = userFactory.create();
+        user.setName(name);
+        user.setEmail(email);
+        user.setRoles(roleRepository.findByNameIn(roles));
+        userRepository.save(user);
+    }
 }

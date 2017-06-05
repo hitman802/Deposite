@@ -199,6 +199,39 @@
         }
       , currenciesForField = []
         ;
+
+    function deleteDepositFew(ids, successHandler) {
+        deleteDeposit('/deposit/deleteFew', ids.join(','), successHandler);
+    }
+
+    function deleteDepositOne(id, successHandler) {
+        deleteDeposit('/deposit/delete', id, successHandler);
+    }
+
+    function deleteDeposit(url, id, successHandler) {
+        $.ajax(
+            { type: "GET"
+                , url: url
+                , data:
+                  {  id: id
+                  }
+                , success:
+                function() {
+                    toastr.options = toastrOptions_success;
+                    toastr.success('Deposit succefuly deleted');
+                    successHandler();
+                }
+                , error:
+                function(xhr) {
+                    toastr.options = toastrOptions_failed;
+                    toastr.error(JSON.parse(xhr.responseText).message);
+                }
+                , complete:
+                function() {
+                }
+            }
+        )
+    }
     function createNewDeposit(name, date_start, date_finish, start_sum, currency, rate, tax_on_percent) {
         $.ajax(
             { type: "GET"
@@ -397,11 +430,13 @@
         });
         $remove.click(function () {
             var ids = getIdSelections();
-            $table.bootstrapTable('remove', {
-                field: 'id',
-                values: ids
-            });
-            $remove.prop('disabled', true);
+            deleteDepositFew(ids, function() {
+                $table.bootstrapTable('remove', {
+                    field: 'id',
+                    values: ids
+                });
+                $remove.prop('disabled', true);
+            })
         });
         $(window).resize(function () {
             $table.bootstrapTable('resetView', {
@@ -432,23 +467,19 @@
     }
     function operateFormatter(value, row, index) {
         return [
-            '<a class="like" href="javascript:void(0)" title="Like">',
-            '<i class="glyphicon glyphicon-heart"></i>',
-            '</a>  ',
             '<a class="remove" href="javascript:void(0)" title="Remove">',
             '<i class="glyphicon glyphicon-remove"></i>',
             '</a>'
         ].join('');
     }
     window.operateEvents = {
-        'click .like': function (e, value, row, index) {
-            alert('You click like action, row: ' + JSON.stringify(row));
-        },
         'click .remove': function (e, value, row, index) {
-            $table.bootstrapTable('remove', {
-                field: 'id',
-                values: [row.id]
-            });
+            deleteDepositOne(row.id, function() {
+                $table.bootstrapTable('remove', {
+                    field: 'id',
+                    values: [row.id]
+                });
+            })
         }
     };
     function totalTextFormatter(data) {

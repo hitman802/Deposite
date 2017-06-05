@@ -69,7 +69,7 @@ public class UserValidator implements Validator {
      * @param email - user name to check
      */
     private void validateUserEmail(String email){
-        if( userRepository.findUserByEmail(email) != null ) {
+        if( userRepository.findByName(email) != null ) {
             throw new UniqueUserEmailException();
         }
     }
@@ -80,7 +80,7 @@ public class UserValidator implements Validator {
      */
     @Transactional
     private void validateUserName(String name){
-        if( userRepository.findUserByName(name) != null ) {
+        if( userRepository.findByName(name) != null ) {
             throw new UniqueUserNameException();
         }
     }
@@ -92,7 +92,7 @@ public class UserValidator implements Validator {
      */
     @Transactional
     private void validateUserName(Long id, String name){
-        if( userRepository.findUserByNameWithDifferentId(id, name) != null ) {
+        if( userRepository.findByNameAndIdNot(name, id) != null ) {
             throw new UniqueUserNameException();
         }
     }
@@ -104,7 +104,7 @@ public class UserValidator implements Validator {
      */
     @Transactional
     private void validateUserEmail(Long id, String email){
-        if( userRepository.findUserByEmailWithDifferentId(id, email) != null ) {
+        if( userRepository.findByEmailAndIdNot(email, id) != null ) {
             throw new UniqueUserEmailException();
         }
     }

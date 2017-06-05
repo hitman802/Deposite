@@ -9,10 +9,9 @@ import dao.entities.RateSource;
 import dao.repositories.CurrencyRepository;
 import dao.repositories.RateSourceRepository;
 import dao.repositories.RatesRepository;
+import factory.CurrencyFactory;
 import factory.RateSourceFactory;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -32,19 +31,17 @@ import java.util.stream.Collectors;
  */
 
 @Log4j
-@NoArgsConstructor
 @Component
 @Scope("singleton")
 public class RatesUpdater implements Runnable {
 
-    @Autowired
-    private CurrencyRepository currencyRepository;
-    @Autowired
-    private RatesRepository ratesRepository;
-    @Autowired
-    private RateSourceRepository rateSourceRepository;
-    @Autowired
-    private RateSourceFactory rateSourceFactory;
+    private final CurrencyRepository currencyRepository;
+    private final RatesRepository ratesRepository;
+    private final RateSourceRepository rateSourceRepository;
+    private final ScheduledExecutorService scheduledExecutorService;
+
+    private final CurrencyFactory currencyFactory;
+    private final RateSourceFactory rateSourceFactory;
 
     @Value("${ratesUpdateInterval}")
     private long interval;
@@ -52,8 +49,14 @@ public class RatesUpdater implements Runnable {
     @Value("${urlNBY}")
     private String urlNBY;
 
-    @Autowired
-    private ScheduledExecutorService scheduledExecutorService;
+    public RatesUpdater(CurrencyRepository currencyRepository, RatesRepository ratesRepository, RateSourceRepository rateSourceRepository, RateSourceFactory rateSourceFactory, ScheduledExecutorService scheduledExecutorService, CurrencyFactory currencyFactory) {
+        this.currencyRepository = currencyRepository;
+        this.ratesRepository = ratesRepository;
+        this.rateSourceRepository = rateSourceRepository;
+        this.rateSourceFactory = rateSourceFactory;
+        this.scheduledExecutorService = scheduledExecutorService;
+        this.currencyFactory = currencyFactory;
+    }
 
     public void run() {
         try {
@@ -70,10 +73,9 @@ public class RatesUpdater implements Runnable {
                     .stream()
                     .filter(a-> (a.getName() != null && !a.getName().trim().isEmpty()))
                     .collect(Collectors.toList());
-            currencyRepository.checkAndUpdateCurrencies(rates);
+            checkAndUpdateCurrencies(rates);
 
             RateSource rateSource = checkAndUpdateRateSource("NBY");
-
             updateRates(rates, rateSource);
 
             log.info("Update rates finished");
@@ -95,6 +97,18 @@ public class RatesUpdater implements Runnable {
         log.info("Shutting down complete");
     }
 
+    private void checkAndUpdateCurrencies(List<Rate> rates) {
+        rates.forEach(k -> {
+            String name = k.getName();
+            Currency currency = currencyRepository.findByName(name);
+            if( currency == null ) {
+                currency = currencyFactory.create();
+                currency.setName(name);
+                currencyRepository.save(currency);
+            }
+        });
+    }
+
     private void updateRates(List<Rate> rates, RateSource rateSource) {
         rates.forEach( rate -> {
 
@@ -106,7 +120,7 @@ public class RatesUpdater implements Runnable {
                 return;
             }
 
-            Currency currency = currencyRepository.getCurrencyByName(currencyName);
+            Currency currency = currencyRepository.findByName(currencyName);
             if( currency == null ) {
                 log.error("Cant find currency in db " + currencyName);
                 return;

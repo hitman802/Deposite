@@ -86,12 +86,14 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--  hibernate -->
+        <!--  hibernate
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate-version}</version>
         </dependency>
+        need or not???
+         -->
 
         <!-- SQL dialect -->
         <!-- org.hibernate.dialect.MySQLDialect in hibernate.cfg.xml-->
@@ -102,12 +104,14 @@
             <version>5.1.6</version>
         </dependency>
 
-        <!-- for JPA, use hibernate-entitymanager instead of hibernate-core -->
+        <!-- for JPA, use hibernate-entitymanager instead of hibernate-core
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate-version}</version>
         </dependency>
+        need or not???
+        -->
 
         <!-- for request sending -->
         <dependency>

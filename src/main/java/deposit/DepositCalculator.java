@@ -4,6 +4,7 @@ import dao.entities.Deposite;
 import factory.DepositOperationsFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.Month;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TreeSet;
@@ -20,17 +21,18 @@ public class DepositCalculator {
         this.depositOperationsFactory = depositOperationsFactory;
     }
 
-    private TreeSet<DepositOperation> calcDeposite(Deposite deposit) {
+    public TreeSet<DepositOperation> generateDepositOperations(Deposite deposit) {
+
         TreeSet<DepositOperation> operations = new TreeSet<>();
 
         //start from start date
         Date depositStartDate = deposit.getStartDate();
         Date depositEndDate = deposit.getEndDate();
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(depositStartDate);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        Calendar calendarStart = Calendar.getInstance();
+        calendarStart.setTime(depositStartDate);
+        Calendar calendarEnd = Calendar.getInstance();
+        calendarEnd.setTime(depositEndDate);
 
 
         return operations;

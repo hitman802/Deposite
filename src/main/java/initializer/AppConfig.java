@@ -1,6 +1,7 @@
 package initializer;
 
 
+import net.sf.log4jdbc.DriverSpy;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.postgresql.Driver;
 import org.springframework.context.annotation.*;
@@ -28,7 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @PropertySources({
         @PropertySource("classpath:properties.props"),
 })
-@ComponentScan({"initializer", "periodical", "dao", "factory", "service", "controllers", "validation"})
+@ComponentScan({"initializer", "periodical", "dao", "factory", "service", "controllers", "validation", "deposit"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "dao.repositories")
 public class AppConfig {
@@ -46,39 +47,12 @@ public class AppConfig {
         return Executors.newSingleThreadScheduledExecutor();
     }
 
-    /*spring data*/
-    @Bean
-    public DriverManagerDataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(Driver.class.getName());
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/DepositesDB");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
-        return dataSource;
-    }
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean emFactory = new LocalContainerEntityManagerFactoryBean();
-        emFactory.setDataSource(dataSource());
-        return emFactory;
-    }
-    @Bean
-    public JpaTransactionManager jpaTransactionManager(){
-        JpaTransactionManager jpa = new JpaTransactionManager();
-        jpa.setDataSource(dataSource());
-        jpa.setEntityManagerFactory(entityManagerFactory().getObject());
-        return jpa;
-    }
-    /*spring data*/
-
-
-/*
-    to enable jpa and transactions
+    //to enable jpa and transactions or SPRING-DATA
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         //when log4jdbc enabled
-        dataSource.setDriverClassName("net.sf.log4jdbc.DriverSpy");
+        dataSource.setDriverClassName(DriverSpy.class.getName());
         dataSource.setUrl("jdbc:log4jdbc:postgresql://localhost:5432/DepositesDB");
         //when log4jdbc enabled
         //regular driver
@@ -99,14 +73,14 @@ public class AppConfig {
         em.setDataSource(dataSource());
         return em;
     }
-    @Bean
+    @Bean(name = "transactionManager")
     public JpaTransactionManager jpaTransactionManager(){
         JpaTransactionManager jpa = new JpaTransactionManager();
         jpa.setDataSource(dataSource());
         return jpa;
     }
-    to enable jpa
-*/
+    //to enable jpa or SPRING-DATA
+
     //to make jsp working
     @Bean
     public InternalResourceViewResolver viewResolver() {
