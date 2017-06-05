@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.StringJoiner;
 import java.util.TreeSet;
 
 /**
@@ -23,5 +24,14 @@ public class DepositOperation implements Comparable{
             return -1;
         }
         return ((DepositOperation)o).dateOfOperation.compareTo(dateOfOperation);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", this.getClass().getSimpleName() + "[", "]")
+                .add("dateOfOperation = " + dateOfOperation)
+                .add("operation = " + operation)
+                .add("sum = " + sum)
+                .toString();
     }
 }

@@ -97,4 +97,9 @@ public class AppConfig {
     public SimpleDateFormat simpleDateFormat() {
         return new SimpleDateFormat("dd-MM-yyyy");
     }
+
+    @Bean(name = "calculator")
+    public SimpleDateFormat simpleDateFormatCalculator() {
+        return new SimpleDateFormat("yyyy-dd-MM");
+    }
 }

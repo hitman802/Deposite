@@ -13,6 +13,7 @@ import exceptions.OperationNotAllowedException;
 import exceptions.UserNotFoundException;
 import factory.DepositeFactory;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,7 +41,7 @@ public class DepositController {
     private DepositCalculator depositCalculator;
 
     public DepositController(UserRepository userRepository, CurrencyRepository currencyRepository,
-                             DepositeRepository depositeRepository, SimpleDateFormat simpleDateFormat, DepositeFactory depositeFactory, DepositCalculator depositCalculator) {
+                             DepositeRepository depositeRepository, @Qualifier("deposit") SimpleDateFormat simpleDateFormat, DepositeFactory depositeFactory, DepositCalculator depositCalculator) {
         this.userRepository = userRepository;
         this.currencyRepository = currencyRepository;
         this.depositeRepository = depositeRepository;
