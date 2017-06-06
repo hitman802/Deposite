@@ -77,7 +77,7 @@ public class DepositController {
 
         List<Deposite> deposites = depositeRepository.findByUser_Name(principal.getName());
 
-        deposites.forEach(depositCalculator::generateDepositOperations);
+        deposites.forEach(depositCalculator::calculateDeposit);
 
         Map<String, Object> deps = new HashMap<>();
         deps.put("total", deposites.size());

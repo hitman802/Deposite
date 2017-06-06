@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TreeSet;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.util.*;
 
 /**
  * Created by SHonchar on 5/29/2017.
@@ -25,10 +25,48 @@ public class DepositCalculator {
         this.dateFormat = dateFormat;
     }
 
-    @SneakyThrows
-    public TreeSet<DepositOperation> generateDepositOperations(Deposite deposit) {
+    public void calculateDeposit(Deposite deposit) {
+        TreeSet<DepositOperation> depositOperations = new TreeSet<DepositOperation>();
+        generateDepositOperationsByMonth(deposit, depositOperations);
+        generateDepositOperationsByReplenishments(deposit, depositOperations);
+        calculateSums(deposit, depositOperations);
+    }
 
-        TreeSet<DepositOperation> operations = new TreeSet<>();
+    @SneakyThrows
+    private void calculateSums(Deposite deposit, TreeSet<DepositOperation> depositOperations) {
+
+        DepositOperation previousOperation = null;
+        Calendar prevCalendar = Calendar.getInstance();
+        for( DepositOperation depositOperation : depositOperations ) {
+
+            Calendar curCalendar = Calendar.getInstance();
+            if (previousOperation == null) {
+                previousOperation = depositOperation;
+                previousOperation.setSum(deposit.getSum());
+                prevCalendar = curCalendar;
+            }
+            curCalendar.setTime(depositOperation.getDateOfOperation());
+
+            long daysDiff = Math.abs(ChronoUnit.DAYS.between(
+                    prevCalendar.getTime().toInstant(), curCalendar.getTime().toInstant()));
+
+            depositOperation.setSum(calcProcentsForGivenPeriod(deposit, daysDiff, previousOperation.getSum()));
+
+            previousOperation = depositOperation;
+            prevCalendar = curCalendar;
+        }
+    }
+
+    private double calcProcentsForGivenPeriod(Deposite deposite, long days, double prevPeriodSum) {
+       return prevPeriodSum * (deposite.getDepositeRate()/100) * days / 360;
+    }
+
+    private void generateDepositOperationsByReplenishments(Deposite deposit, SortedSet<DepositOperation> operations) {
+
+    }
+
+    @SneakyThrows
+    private void generateDepositOperationsByMonth(Deposite deposit, SortedSet<DepositOperation> operations) {
 
         //start from start date
         Date depositStartDate = dateFormat.parse(deposit.getStartDate().toString());
@@ -52,9 +90,8 @@ public class DepositCalculator {
             operations.add(depositOperation);
 
             calendarCurrent.set(Calendar.MONTH, calendarCurrent.get(Calendar.MONTH)+1);
+            calendarCurrent.set(Calendar.DAY_OF_MONTH, 1);
         }
-
-        return operations;
     }
 
 }
