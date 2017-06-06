@@ -2,15 +2,12 @@ package initializer;
 
 
 import net.sf.log4jdbc.DriverSpy;
-import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.postgresql.Driver;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -18,7 +15,6 @@ import org.springframework.web.servlet.view.JstlView;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import java.text.SimpleDateFormat;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 

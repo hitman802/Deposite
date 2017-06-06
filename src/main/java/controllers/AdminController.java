@@ -120,6 +120,7 @@ public class AdminController {
     private void  addUser(String name, String password, String email, List<String> roles) {
         Users user = userFactory.create();
         user.setName(name);
+        user.setPassword(password);
         user.setEmail(email);
         user.setRoles(roleRepository.findByNameIn(roles));
         userRepository.save(user);
