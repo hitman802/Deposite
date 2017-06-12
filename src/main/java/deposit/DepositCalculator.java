@@ -35,16 +35,13 @@ public class DepositCalculator {
     @SneakyThrows
     private void calculateSums(Deposite deposit, TreeSet<DepositOperation> depositOperations) {
 
-        DepositOperation previousOperation = null;
+        DepositOperation previousOperation = depositOperations.first();
         Calendar prevCalendar = Calendar.getInstance();
-        for( DepositOperation depositOperation : depositOperations ) {
+        prevCalendar.setTime(previousOperation.getDateOfOperation());
+        previousOperation.setSum(deposit.getSum());
 
+        for( DepositOperation depositOperation : depositOperations ) {
             Calendar curCalendar = Calendar.getInstance();
-            if (previousOperation == null) {
-                previousOperation = depositOperation;
-                previousOperation.setSum(deposit.getSum());
-                prevCalendar = curCalendar;
-            }
             curCalendar.setTime(depositOperation.getDateOfOperation());
 
             long daysDiff = Math.abs(ChronoUnit.DAYS.between(
