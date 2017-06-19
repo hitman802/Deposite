@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
@@ -27,35 +28,68 @@ public class DepositCalculator {
 
     public void calculateDeposit(Deposite deposit) {
         TreeSet<DepositOperation> depositOperations = new TreeSet<DepositOperation>();
+
         generateDepositOperationsByMonth(deposit, depositOperations);
         generateDepositOperationsByReplenishments(deposit, depositOperations);
+
         calculateSums(deposit, depositOperations);
+        deposit.setDepositOperations(depositOperations);
     }
 
     @SneakyThrows
     private void calculateSums(Deposite deposit, TreeSet<DepositOperation> depositOperations) {
 
         DepositOperation previousOperation = depositOperations.first();
+
         Calendar prevCalendar = Calendar.getInstance();
         prevCalendar.setTime(previousOperation.getDateOfOperation());
         previousOperation.setSum(deposit.getSum());
 
+        double monthPercentsWoTax = 0;
+        double sumAllPeriodWithPercents = previousOperation.getSum();
+        boolean monthChanged = false;
+
         for( DepositOperation depositOperation : depositOperations ) {
+
             Calendar curCalendar = Calendar.getInstance();
             curCalendar.setTime(depositOperation.getDateOfOperation());
 
-            long daysDiff = Math.abs(ChronoUnit.DAYS.between(
-                    prevCalendar.getTime().toInstant(), curCalendar.getTime().toInstant()));
+            switch( depositOperation.getOperation() ) {
 
-            depositOperation.setSum(calcProcentsForGivenPeriod(deposit, daysDiff, previousOperation.getSum()));
+                case calcProcents: {
+                    long daysDiff = Math.abs(ChronoUnit.DAYS.between(
+                            prevCalendar.getTime().toInstant(), curCalendar.getTime().toInstant()));
+                    double calculatedSum = calcProcentsForGivenPeriod(deposit, daysDiff, sumAllPeriodWithPercents);
 
-            previousOperation = depositOperation;
+                    if( !monthChanged ) {
+                        monthPercentsWoTax += calculatedSum;
+                    }
+
+                    sumAllPeriodWithPercents += calculatedSum;
+                    depositOperation.setSum(calculatedSum);
+                    break;
+                }
+
+                case removeTax: {
+                    double monthlyTax = monthPercentsWoTax * deposit.getTaxOnPercents() / 100;
+                    sumAllPeriodWithPercents -= monthlyTax;
+                    depositOperation.setSum(monthlyTax);
+                    break;
+                }
+
+                default: break;
+            }
+            if( monthChanged ) {
+                monthPercentsWoTax = 0;
+            }
+            monthChanged = prevCalendar.get(Calendar.MONTH) != curCalendar.get(Calendar.MONTH);
             prevCalendar = curCalendar;
         }
+        deposit.setFinalSum(sumAllPeriodWithPercents);
     }
 
     private double calcProcentsForGivenPeriod(Deposite deposite, long days, double prevPeriodSum) {
-       return prevPeriodSum * (deposite.getDepositeRate()/100) * days / 360;
+       return prevPeriodSum * (deposite.getDepositeRate()/100) * days / 365;
     }
 
     private void generateDepositOperationsByReplenishments(Deposite deposit, SortedSet<DepositOperation> operations) {
@@ -76,19 +110,23 @@ public class DepositCalculator {
         Calendar calendarCurrent = Calendar.getInstance();
         calendarCurrent.setTime(depositStartDate);
         while( calendarCurrent.before(calendarEnd) ) {
-            DepositOperation depositOperation = depositOperationsFactory.create();
-            depositOperation.setDateOfOperation(calendarCurrent.getTime());
-            depositOperation.setOperation(DepositOperations.addProcents);
-            operations.add(depositOperation);
 
-            depositOperation = depositOperationsFactory.create();
-            depositOperation.setDateOfOperation(calendarCurrent.getTime());
-            depositOperation.setOperation(DepositOperations.removeTax);
-            operations.add(depositOperation);
+            operations.add(depositOperationsFactory.createOnDateAndOperation(
+                    calendarCurrent.getTime(), DepositOperations.calcProcents));
+
+            operations.add(depositOperationsFactory.createOnDateAndOperation(
+                    calendarCurrent.getTime(), DepositOperations.removeTax));
 
             calendarCurrent.set(Calendar.MONTH, calendarCurrent.get(Calendar.MONTH)+1);
             calendarCurrent.set(Calendar.DAY_OF_MONTH, 1);
         }
+
+        operations.add(depositOperationsFactory.createOnDateAndOperation(
+                deposit.getEndDate(), DepositOperations.calcProcents));
+
+        operations.add(depositOperationsFactory.createOnDateAndOperation(
+                deposit.getEndDate(), DepositOperations.removeTax));
+
     }
 
 }

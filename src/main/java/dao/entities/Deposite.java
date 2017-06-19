@@ -3,10 +3,12 @@ package dao.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import deposit.DepositOperation;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -55,4 +57,10 @@ public class Deposite {
     @ManyToOne
     @JoinColumn(name = "deposite_user", referencedColumnName = "users_id")
     @Getter @Setter Users user;
+
+    @Transient
+    @Getter @Setter private Collection<DepositOperation> depositOperations;
+
+    @Transient
+    @Getter @Setter private Double finalSum;
 }
