@@ -21,11 +21,10 @@ public class DepositOperation implements Comparable<DepositOperation> {
 
     @Override
     public int compareTo(DepositOperation o) {
-        int res = dateOfOperation.compareTo(o.dateOfOperation);
-        if( res != 0 ) {
-            return res;
-        }
-        return operation.compareTo(o.operation);
+        return Comparator
+                .comparing(DepositOperation::getDateOfOperation)
+                .thenComparing(DepositOperation::getOperation)
+                .compare(o, this);
     }
 
     @Override

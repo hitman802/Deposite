@@ -26,10 +26,13 @@ import java.util.Objects;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${server.session.cookie.name}")
-    String cookieName;
+    private String cookieName;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
+
+    public SecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -53,7 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ;
     }
 
-    @Autowired
+//    @Autowired
+    @Bean
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }

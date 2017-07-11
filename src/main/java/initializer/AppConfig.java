@@ -22,9 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * Created by Admin on 22.04.2017.
  */
 @Configuration
-@PropertySources({
-        @PropertySource("classpath:properties.props"),
-})
+@PropertySource("classpath:properties.props")
 @ComponentScan({"initializer", "periodical", "dao", "factory", "service", "controllers", "validation", "deposit"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "dao.repositories")

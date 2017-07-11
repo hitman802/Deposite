@@ -68,15 +68,13 @@ public class RatesUpdater implements Runnable {
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            List<Rate> rates = mapper.readValue(response, new TypeReference<List<Rate>>(){});
-            rates = rates
+            List<Rate> rates = ((List<Rate>)mapper.readValue(response, new TypeReference<List<Rate>>(){}))
                     .stream()
                     .filter(a-> (a.getName() != null && !a.getName().trim().isEmpty()))
                     .collect(Collectors.toList());
-            checkAndUpdateCurrencies(rates);
 
-            RateSource rateSource = checkAndUpdateRateSource("NBY");
-            updateRates(rates, rateSource);
+            checkAndUpdateCurrencies(rates);
+            updateRates(rates, checkAndUpdateRateSource("NBY"));
 
             log.info("Update rates finished");
         } catch(Exception e) {

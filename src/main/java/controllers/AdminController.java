@@ -19,6 +19,7 @@ import validation.UserRolesValidator;
 import validation.UserValidator;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -101,10 +102,9 @@ public class AdminController {
     }
 
     private Map<String, List<String>> createUsersRolesMap(Collection<Users> users) {
-        Map<String, List<String>> userRoles = new HashMap<>();
-        users.forEach( user -> userRoles.put(user.getName(),
-                FormatUtils.formatRolesFromDBtoView(user.getRoles()).stream().sorted().collect(Collectors.toList())));
-        return userRoles;
+        Function<Users, List<String>> valMapper = val->FormatUtils.formatRolesFromDBtoView(
+                val.getRoles()).stream().sorted().collect(Collectors.toList());
+        return users.stream().collect(Collectors.toMap(Users::getName, valMapper));
     }
 
     @Transactional

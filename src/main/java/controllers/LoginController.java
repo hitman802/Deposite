@@ -13,6 +13,8 @@ import service.interfaces.ISecurityService;
 import service.interfaces.IUserService;
 import validation.UserValidator;
 
+import java.util.Optional;
+
 /**
  * Created by Admin on 29.04.2017.
  */
@@ -46,20 +48,14 @@ public class LoginController {
         }
 
         userService.save(userForm);
-
         securityService.autologin(userForm.getName(), userForm.getPasswordConfirm());
-
         return "redirect:/index";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model, String error, String logout) {
-        if (error != null)
-            model.addAttribute("error", "Your username and password is invalid.");
-
-        if (logout != null)
-            model.addAttribute("message", "You have been logged out successfully.");
-
+        Optional.ofNullable(error).ifPresent(err -> model.addAttribute("error", "Your username and password is invalid."));
+        Optional.ofNullable(logout).ifPresent(log-> model.addAttribute("message", "You have been logged out successfully."));
         return "login";
     }
 }

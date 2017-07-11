@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Admin on 29.04.2017.
@@ -52,16 +53,14 @@ public class DepositController {
 
     @RequestMapping(value = {"", "/index"}, method = RequestMethod.GET)
     public String registration(Model model, Principal principal) {
-        String userName = principal.getName();
-        if ( userName == null ) {
-            throw new UserNotFoundException();
-        }
+        Optional<String> userName = Optional.ofNullable(principal.getName());
+        Optional<Users> user = Optional.ofNullable(
+                userRepository.findByName(
+                        userName.orElseThrow(UserNotFoundException::new)
+                )
+        );
 
-        Users user = userRepository.findByName(userName);
-        if( user == null ) {
-            throw new UserNotFoundException();
-        }
-        model.addAttribute("user", user);
+        model.addAttribute("user", user.orElseThrow(UserNotFoundException::new));
         model.addAttribute("currencies", currencyRepository.findAll());
 
         return "index";
@@ -76,7 +75,6 @@ public class DepositController {
         mapper.setDateFormat(simpleDateFormat);
 
         List<Deposite> deposites = depositeRepository.findByUser_Name(principal.getName());
-
         deposites.forEach(depositCalculator::calculateDeposit);
 
         Map<String, Object> deps = new HashMap<>();
@@ -91,11 +89,13 @@ public class DepositController {
 
         String currentUser = principal.getName();
         List<Deposite> deposites = depositeRepository.findByIdIn(Arrays.asList(ids));
-        deposites.forEach(deposite -> {
-            if( !deposite.getUser().getName().equals(currentUser) ) {
-                throw new OperationNotAllowedException();
-            }
-        });
+        if( !deposites
+                .stream()
+                .filter(deposit->!deposit.getUser().getName().equals(currentUser))
+                .collect(Collectors.toList())
+                .isEmpty()) {
+            throw new OperationNotAllowedException();
+        }
         depositeRepository.delete(deposites);
         return "index";
     }
@@ -103,11 +103,10 @@ public class DepositController {
     @RequestMapping(value = "/deposit/delete", method = RequestMethod.GET)
     public String deleteDeposit(Principal principal,
         @RequestParam(value = "id") Long id) {
-        Deposite deposite = depositeRepository.findOne(id);
-        Optional.ofNullable(deposite).orElseThrow(DepositNotFoundException::new);
-        if ( !deposite.getUser().getName().equals(principal.getName()) ) {
+        Optional<Deposite> deposit = Optional.ofNullable(depositeRepository.findOne(id));
+         if ( !deposit.orElseThrow(DepositNotFoundException::new).getUser().getName().equals(principal.getName()) ) {
             throw new OperationNotAllowedException();
-        };
+        }
         depositeRepository.delete(id);
         return "index";
     }

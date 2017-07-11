@@ -27,7 +27,7 @@ public class DepositCalculator {
     }
 
     public void calculateDeposit(Deposite deposit) {
-        TreeSet<DepositOperation> depositOperations = new TreeSet<DepositOperation>();
+        TreeSet<DepositOperation> depositOperations = new TreeSet<>();
 
         generateDepositOperationsByMonth(deposit, depositOperations);
         generateDepositOperationsByReplenishments(deposit, depositOperations);
