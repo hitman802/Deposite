@@ -45,6 +45,7 @@ public class AppConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
+
         //when log4jdbc enabled
         dataSource.setDriverClassName(DriverSpy.class.getName());
         dataSource.setUrl("jdbc:log4jdbc:postgresql://localhost:5432/DepositesDB");
