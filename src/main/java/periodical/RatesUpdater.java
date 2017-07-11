@@ -140,6 +140,7 @@ public class RatesUpdater implements Runnable {
         RateSource rateSource = rateSourceRepository.findByName(sourceName);
         if( rateSource == null ) {
             rateSource = rateSourceFactory.create();
+            rateSource.setName(sourceName);
             rateSourceRepository.save(rateSource);
         }
         return rateSource;
