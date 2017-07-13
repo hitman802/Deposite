@@ -22,8 +22,12 @@ import javax.annotation.PreDestroy;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -96,28 +100,44 @@ public class RatesUpdater implements Runnable {
     }
 
     private void checkAndUpdateCurrencies(List<Rate> rates) {
-        rates.forEach(k -> {
-            String name = k.getName();
-            Currency currency = currencyRepository.findByName(name);
-            if( currency == null ) {
-                currency = currencyFactory.create();
-                currency.setName(name);
-                currencyRepository.save(currency);
-            }
-        });
+        rates.stream()
+                .filter(rate -> currencyRepository.findByName(rate.getName()) == null)
+                .forEach(saveCurrency());
     }
 
     private void updateRates(List<Rate> rates, RateSource rateSource) {
-        rates.forEach( rate -> {
+        Date date = new Date();
+        rates.stream()
+                .filter(filterRateByCurrencyNameAndDate(date))
+                .forEach(saveRate(date, rateSource));
+    }
 
+    private String getCurrentDate() {
+        SimpleDateFormat dt = new SimpleDateFormat("YYYYMMdd");
+        return dt.format(new Date());
+    }
+
+    private RateSource checkAndUpdateRateSource(String sourceName) {
+        return Optional.ofNullable(rateSourceRepository.findByName(sourceName))
+                .orElseGet(createSourceName(sourceName));
+    }
+
+    private Supplier<RateSource> createSourceName(String sourceName) {
+        return () -> {
+            RateSource rateSource = rateSourceFactory.create();
+            rateSource.setName(sourceName);
+            rateSourceRepository.save(rateSource);
+            return rateSource;
+        };
+    }
+
+    private Predicate<Rate> filterRateByCurrencyNameAndDate(Date date) {
+        return rate -> ratesRepository.findByCurrency_Name_AndDate(rate.getName(), date) != null;
+    }
+
+    private Consumer<Rate> saveRate(Date date, RateSource rateSource) {
+        return rate -> {
             String currencyName = rate.getName();
-            Date date = new Date();
-
-            //check if rate already exist on given date, if yes - skip
-            if( ratesRepository.findByCurrency_Name_AndDate(currencyName, date) != null ) {
-                return;
-            }
-
             Currency currency = currencyRepository.findByName(currencyName);
             if( currency == null ) {
                 log.error("Cant find currency in db " + currencyName);
@@ -128,21 +148,14 @@ public class RatesUpdater implements Runnable {
             rate.setSource(rateSource);
             log.info("Processing " + rate);
             ratesRepository.save(rate);
-        });
+        };
     }
 
-    private String getCurrentDate() {
-        SimpleDateFormat dt = new SimpleDateFormat("YYYYMMdd");
-        return dt.format(new Date());
-    }
-
-    private RateSource checkAndUpdateRateSource(String sourceName) {
-        RateSource rateSource = rateSourceRepository.findByName(sourceName);
-        if( rateSource == null ) {
-            rateSource = rateSourceFactory.create();
-            rateSource.setName(sourceName);
-            rateSourceRepository.save(rateSource);
-        }
-        return rateSource;
+    private Consumer<Rate> saveCurrency() {
+        return rate -> {
+            Currency currency = currencyFactory.create();
+            currency.setName(rate.getName());
+            currencyRepository.save(currency);
+        };
     }
 }
