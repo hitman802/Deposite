@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 /**
  * Created by Admin on 22.04.2017.

@@ -1,6 +1,5 @@
 package dao.entities;
 
-import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 

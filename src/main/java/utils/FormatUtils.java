@@ -1,10 +1,8 @@
 package utils;
 
-import controllers.AdminController;
 import dao.entities.Role;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +10,9 @@ import java.util.stream.Collectors;
  * Created by Admin on 21.05.2017.
  */
 public class FormatUtils {
+
+    private FormatUtils() {
+    }
 
     public static List<String> formatRolesFromDBtoView(Collection<Role> rolesDB) {
         return rolesDB.stream().map(role -> formatRoleFromDBtoView(role.getName())).collect(Collectors.toList());

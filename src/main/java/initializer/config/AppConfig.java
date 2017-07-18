@@ -1,7 +1,9 @@
-package initializer;
+package initializer.config;
 
 
+import initializer.config.properties.DbProperties;
 import net.sf.log4jdbc.DriverSpy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -22,11 +24,13 @@ import java.util.concurrent.ScheduledExecutorService;
  * Created by Admin on 22.04.2017.
  */
 @Configuration
-@PropertySource("classpath:properties.props")
 @ComponentScan({"initializer", "periodical", "dao", "factory", "service", "controllers", "validation", "deposit"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "dao.repositories")
 public class AppConfig {
+
+    @Autowired
+    private DbProperties dbProperties;
 
     //to read property files
     @Bean
@@ -48,14 +52,14 @@ public class AppConfig {
 
         //when log4jdbc enabled
         dataSource.setDriverClassName(DriverSpy.class.getName());
-        dataSource.setUrl("jdbc:log4jdbc:postgresql://localhost:5432/DepositesDB");
+        dataSource.setUrl(dbProperties.getUrl());
         //when log4jdbc enabled
         //regular driver
         //dataSource.setDriverClassName("org.postgresql.Driver");
         //dataSource.setUrl("jdbc:postgresql://localhost:5432/DepositesDB");
         //regular driver
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
+        dataSource.setUsername(dbProperties.getUsername());
+        dataSource.setPassword(dbProperties.getPassword());
         return dataSource;
     }
     @Bean
@@ -97,4 +101,5 @@ public class AppConfig {
     public SimpleDateFormat simpleDateFormatCalculator() {
         return new SimpleDateFormat("yyyy-dd-MM");
     }
+
 }

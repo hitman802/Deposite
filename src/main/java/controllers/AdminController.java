@@ -1,17 +1,18 @@
 package controllers;
 
-import dao.entities.Role;
 import dao.entities.Users;
 import dao.repositories.RoleRepository;
 import dao.repositories.UserRepository;
 import factory.UserFactory;
 import lombok.extern.log4j.Log4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import service.UserServiceImpl;
 import utils.FormatUtils;
@@ -30,6 +31,7 @@ import java.util.stream.StreamSupport;
 @Log4j
 public class AdminController {
 
+    private static final String REDIRECT_ADMIN_USER_LIST = "redirect:/admin/user/list";
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private UserServiceImpl userService;
@@ -76,14 +78,14 @@ public class AdminController {
         userValidator.validateUserNameAndEmail(id, name, email);
         updateUser(id, name, email, FormatUtils.formatRolesFromViewToDB(Arrays.asList(roles)));
 
-        return new ModelAndView("redirect:/admin/user/list");
+        return new ModelAndView(REDIRECT_ADMIN_USER_LIST);
     }
 
     @Secured("ROLE_ADMIN")
     @RequestMapping(value="/admin/user/delete",method = RequestMethod.GET)
     public ModelAndView delete(@RequestParam(value = "id") Long id){
         userRepository.delete(id);
-        return new ModelAndView("redirect:/admin/user/list");
+        return new ModelAndView(REDIRECT_ADMIN_USER_LIST);
     }
 
     @Secured("ROLE_ADMIN")
@@ -98,7 +100,7 @@ public class AdminController {
         userRolesValidator.validateRoles(roles);
 
         addUser(name, userService.encodePassword(password), email, FormatUtils.formatRolesFromViewToDB(Arrays.asList(roles)));
-        return new ModelAndView("redirect:/admin/user/list");
+        return new ModelAndView(REDIRECT_ADMIN_USER_LIST);
     }
 
     private Map<String, List<String>> createUsersRolesMap(Collection<Users> users) {

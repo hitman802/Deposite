@@ -1,14 +1,11 @@
 package deposit;
 
-import dao.entities.Deposite;
-import factory.DepositOperationsFactory;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Comparator;
 import java.util.Date;
 import java.util.StringJoiner;
-import java.util.TreeSet;
 
 /**
  * Created by SHonchar on 5/29/2017.

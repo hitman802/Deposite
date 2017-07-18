@@ -3,20 +3,20 @@ package utils;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Created by Admin on 23.04.2017.
  */
 @Log4j
 public class RequestUtils {
+
+    private RequestUtils() {
+    }
 
     public static String sendGetRequestToUrl(String url) {
         try ( CloseableHttpClient httpClient = HttpClientBuilder.create().build() ) {

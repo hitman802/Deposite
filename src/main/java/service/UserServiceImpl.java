@@ -1,15 +1,13 @@
 package service;
 
-import dao.entities.Role;
 import dao.entities.Users;
 import dao.repositories.RoleRepository;
 import dao.repositories.UserRepository;
-import org.springframework.stereotype.Service;
-import service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import service.interfaces.IUserService;
 
-import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 

@@ -11,6 +11,7 @@ import dao.repositories.RateSourceRepository;
 import dao.repositories.RatesRepository;
 import factory.CurrencyFactory;
 import factory.RateSourceFactory;
+import initializer.config.properties.RatesUpdaterProperties;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -43,23 +44,18 @@ public class RatesUpdater implements Runnable {
     private final RatesRepository ratesRepository;
     private final RateSourceRepository rateSourceRepository;
     private final ScheduledExecutorService scheduledExecutorService;
-
     private final CurrencyFactory currencyFactory;
     private final RateSourceFactory rateSourceFactory;
+    private final RatesUpdaterProperties ratesUpdaterProperties;
 
-    @Value("${ratesUpdateInterval}")
-    private long interval;
-
-    @Value("${urlNBY}")
-    private String urlNBY;
-
-    public RatesUpdater(CurrencyRepository currencyRepository, RatesRepository ratesRepository, RateSourceRepository rateSourceRepository, RateSourceFactory rateSourceFactory, ScheduledExecutorService scheduledExecutorService, CurrencyFactory currencyFactory) {
+    public RatesUpdater(CurrencyRepository currencyRepository, RatesRepository ratesRepository, RateSourceRepository rateSourceRepository, RateSourceFactory rateSourceFactory, ScheduledExecutorService scheduledExecutorService, CurrencyFactory currencyFactory, RatesUpdaterProperties ratesUpdaterProperties) {
         this.currencyRepository = currencyRepository;
         this.ratesRepository = ratesRepository;
         this.rateSourceRepository = rateSourceRepository;
         this.rateSourceFactory = rateSourceFactory;
         this.scheduledExecutorService = scheduledExecutorService;
         this.currencyFactory = currencyFactory;
+        this.ratesUpdaterProperties = ratesUpdaterProperties;
     }
 
     public void run() {
@@ -67,8 +63,7 @@ public class RatesUpdater implements Runnable {
             log.info("Update rates started");
 
             //send request to NBY
-            String response = RequestUtils.sendGetRequestToUrl(
-                    urlNBY + "?date=" + getCurrentDate() + "&json");
+            String response = RequestUtils.sendGetRequestToUrl(formatNBYUrl());
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -88,6 +83,7 @@ public class RatesUpdater implements Runnable {
 
     @PostConstruct
     private void init() {
+        long interval = ratesUpdaterProperties.getUpdateInterval();
         log.info("Starting rates updated with interval " + interval + " sec");
         scheduledExecutorService.scheduleAtFixedRate(this, 0, interval, TimeUnit.SECONDS);
     }
@@ -100,14 +96,14 @@ public class RatesUpdater implements Runnable {
     }
 
     private void checkAndUpdateCurrencies(List<Rate> rates) {
-        rates.stream()
+        rates.stream().parallel()
                 .filter(rate -> currencyRepository.findByName(rate.getName()) == null)
                 .forEach(saveCurrency());
     }
 
     private void updateRates(List<Rate> rates, RateSource rateSource) {
         Date date = new Date();
-        rates.stream()
+        rates.stream().parallel()
                 .filter(filterRateByCurrencyNameAndDate(date))
                 .forEach(saveRate(date, rateSource));
     }
@@ -132,7 +128,7 @@ public class RatesUpdater implements Runnable {
     }
 
     private Predicate<Rate> filterRateByCurrencyNameAndDate(Date date) {
-        return rate -> ratesRepository.findByCurrency_Name_AndDate(rate.getName(), date) != null;
+        return rate -> ratesRepository.findByCurrency_Name_AndDate(rate.getName(), date) == null;
     }
 
     private Consumer<Rate> saveRate(Date date, RateSource rateSource) {
@@ -157,5 +153,9 @@ public class RatesUpdater implements Runnable {
             currency.setName(rate.getName());
             currencyRepository.save(currency);
         };
+    }
+
+    private String formatNBYUrl() {
+        return ratesUpdaterProperties.getSource().getUrl() + "?date=" + getCurrentDate() + "&json";
     }
 }
