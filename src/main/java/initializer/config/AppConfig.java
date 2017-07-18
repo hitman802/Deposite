@@ -49,15 +49,8 @@ public class AppConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-
-        //when log4jdbc enabled
         dataSource.setDriverClassName(DriverSpy.class.getName());
         dataSource.setUrl(dbProperties.getUrl());
-        //when log4jdbc enabled
-        //regular driver
-        //dataSource.setDriverClassName("org.postgresql.Driver");
-        //dataSource.setUrl("jdbc:postgresql://localhost:5432/DepositesDB");
-        //regular driver
         dataSource.setUsername(dbProperties.getUsername());
         dataSource.setPassword(dbProperties.getPassword());
         return dataSource;
@@ -79,18 +72,6 @@ public class AppConfig {
         return jpa;
     }
     //to enable jpa or SPRING-DATA
-
-    //to make jsp working
-    @Bean
-    public InternalResourceViewResolver viewResolver() {
-        InternalResourceViewResolver viewResolver
-                = new InternalResourceViewResolver();
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/");
-        viewResolver.setSuffix(".jsp");
-        return viewResolver;
-    }
-    //to make jsp working
 
     @Bean(name = "deposit")
     public SimpleDateFormat simpleDateFormat() {

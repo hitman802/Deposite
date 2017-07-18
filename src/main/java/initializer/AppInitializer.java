@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Created by Admin on 22.04.2017.
  */
 @SpringBootApplication
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+@EnableAutoConfiguration
 @EnableTransactionManagement
 @Log4j
 public class AppInitializer extends SpringBootServletInitializer {
