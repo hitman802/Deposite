@@ -22,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * Created by Admin on 22.04.2017.
  */
 @Configuration
-@ComponentScan({"initializer", "java.periodical", "dao", "factory", "service", "controllers", "validation", "deposit"})
+@ComponentScan({"initializer", "periodical", "dao", "factory", "service", "controllers", "validation", "deposit"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "dao.repositories")
 public class AppConfig {
