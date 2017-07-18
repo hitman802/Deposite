@@ -8,6 +8,7 @@ import dao.repositories.RateSourceRepository;
 import dao.repositories.RatesRepository;
 import factory.CurrencyFactory;
 import factory.RateSourceFactory;
+import initializer.config.properties.RateConfig;
 import initializer.config.properties.RatesUpdaterProperties;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -80,6 +81,11 @@ public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
         currencyFactory = Mockito.mock(CurrencyFactory.class);
         ratesUpdaterProperties = Mockito.mock(RatesUpdaterProperties.class);
         PowerMockito.mockStatic(RequestUtils.class);
+
+        RateConfig mockRateConfig = new RateConfig();
+        mockRateConfig.setName("NBY");
+        mockRateConfig.setUrl("url");
+        when(ratesUpdaterProperties.getSource()).thenReturn(mockRateConfig);
 
         String responseFromNBY = "[{\"cc\":\"HRK\",\"exchangedate\":\"13.07.2017\"}" +
                 ",{\"r030\":203,\"txt\":\"Чеська крона\",\"rate\":1.13616,\"cc\":\"CZK\",\"exchangedate\":\"13.07.2017\"}" +
