@@ -1,4 +1,4 @@
-package periodical;
+package period;
 
 import dao.entities.Currency;
 import dao.entities.Rate;
@@ -18,6 +18,7 @@ import org.testng.IObjectFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
+import periodical.RatesUpdater;
 import utils.RequestUtils;
 
 import java.util.concurrent.ScheduledExecutorService;

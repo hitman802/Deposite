@@ -11,8 +11,6 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
@@ -24,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * Created by Admin on 22.04.2017.
  */
 @Configuration
-@ComponentScan({"initializer", "periodical", "dao", "factory", "service", "controllers", "validation", "deposit"})
+@ComponentScan({"initializer", "java.periodical", "dao", "factory", "service", "controllers", "validation", "deposit"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "dao.repositories")
 public class AppConfig {
