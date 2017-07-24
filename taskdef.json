@@ -3,8 +3,8 @@
     {
       "image": "%REPOSITORY_URI%:v_%BUILD_NUMBER%",
       "name": "deposit",
-      "cpu": 10,
-      "memory": 256,
+      "cpu": 1,
+      "memory": 500,
       "essential": true,
       "portMappings": [
         {
