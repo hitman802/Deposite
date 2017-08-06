@@ -1,15 +1,15 @@
 package period;
 
-import dao.entities.Currency;
-import dao.entities.Rate;
-import dao.entities.RateSource;
-import dao.repositories.CurrencyRepository;
-import dao.repositories.RateSourceRepository;
-import dao.repositories.RatesRepository;
-import factory.CurrencyFactory;
-import factory.RateSourceFactory;
-import initializer.config.properties.RateConfig;
-import initializer.config.properties.RatesUpdaterProperties;
+import com.dao.entities.Currency;
+import com.dao.entities.Rate;
+import com.dao.entities.RateSource;
+import com.dao.repositories.CurrencyRepository;
+import com.dao.repositories.RateSourceRepository;
+import com.dao.repositories.RatesRepository;
+import com.factory.CurrencyFactory;
+import com.factory.RateSourceFactory;
+import com.config.properties.RateConfig;
+import com.config.properties.RatesUpdaterProperties;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -18,8 +18,8 @@ import org.testng.IObjectFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
-import periodical.RatesUpdater;
-import utils.RequestUtils;
+import com.periodical.RatesUpdater;
+import com.utils.RequestUtils;
 
 import java.util.concurrent.ScheduledExecutorService;
 
