@@ -3,13 +3,9 @@ package com.repositories;
 import com.BaseDataJPATest;
 import com.dao.entities.Currency;
 import com.dao.repositories.CurrencyRepository;
-import com.dao.repositories.ICurrencyRepository;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -19,11 +15,20 @@ import org.testng.annotations.Test;
 public class CurrencyRepositoryDataJPATest extends BaseDataJPATest {
 
     @Autowired
-    private ICurrencyRepository currencyRepository;
+    private CurrencyRepository currencyRepository;
 
     @Test
-    public void first() {
-        Currency currency = currencyRepository.findByName("UAH");
+    public void findByName() {
+        String currencyName = "UAH";
+        Currency currency = currencyRepository.findByName(currencyName);
+        Assert.assertNotNull(currency);
+        Assert.assertEquals(currencyName, currency.getName());
+
+        Assert.assertNull(currencyRepository.findByName("NOTEXISTING"));
     }
 
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "not implemented")
+    public void testCustomMethod() {
+        currencyRepository.customMethod();
+    }
 }

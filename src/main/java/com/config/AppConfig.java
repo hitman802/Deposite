@@ -5,9 +5,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.vendor.HibernateJpaSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManagerFactory;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 @Configuration
 @EnableTransactionManagement
+@EnableJpaRepositories
 public class AppConfig {
 
     //excutor for rates updater
@@ -37,7 +40,9 @@ public class AppConfig {
     }
 
     @Bean
-    public HibernateJpaSessionFactoryBean sessionFactory() {
-        return new HibernateJpaSessionFactoryBean();
+    public HibernateJpaSessionFactoryBean sessionFactory(EntityManagerFactory emf) {
+        HibernateJpaSessionFactoryBean fact = new HibernateJpaSessionFactoryBean();
+        fact.setEntityManagerFactory(emf);
+        return fact;
     }
 }

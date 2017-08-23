@@ -2,7 +2,7 @@ package com.controllers;
 
 import com.dao.entities.Deposite;
 import com.dao.entities.Users;
-import com.dao.repositories.ICurrencyRepository;
+import com.dao.repositories.CurrencyRepository;
 import com.dao.repositories.DepositeRepository;
 import com.dao.repositories.UserRepository;
 import com.deposit.DepositCalculator;
@@ -35,13 +35,13 @@ import java.util.stream.Collectors;
 public class DepositController {
 
     private UserRepository userRepository;
-    private ICurrencyRepository currencyRepository;
+    private CurrencyRepository currencyRepository;
     private DepositeRepository depositeRepository;
     private SimpleDateFormat simpleDateFormat;
     private DepositeFactory depositeFactory;
     private DepositCalculator depositCalculator;
 
-    public DepositController(UserRepository userRepository, ICurrencyRepository currencyRepository,
+    public DepositController(UserRepository userRepository, CurrencyRepository currencyRepository,
                              DepositeRepository depositeRepository, @Qualifier("deposit") SimpleDateFormat simpleDateFormat, DepositeFactory depositeFactory, DepositCalculator depositCalculator) {
         this.userRepository = userRepository;
         this.currencyRepository = currencyRepository;

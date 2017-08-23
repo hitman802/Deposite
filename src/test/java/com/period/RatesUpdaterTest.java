@@ -3,7 +3,7 @@ package com.period;
 import com.dao.entities.Currency;
 import com.dao.entities.Rate;
 import com.dao.entities.RateSource;
-import com.dao.repositories.ICurrencyRepository;
+import com.dao.repositories.CurrencyRepository;
 import com.dao.repositories.RateSourceRepository;
 import com.dao.repositories.RatesRepository;
 import com.factory.CurrencyFactory;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
 
     private RatesUpdater ratesUpdater;
-    private ICurrencyRepository ICurrencyRepository;
+    private CurrencyRepository CurrencyRepository;
     private RatesRepository ratesRepository;
     private RateSourceRepository rateSourceRepository;
     private RateSourceFactory rateSourceFactory;
@@ -52,15 +52,15 @@ public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
     @BeforeMethod
     public void setUp() throws Exception {
         prepareMocks();
-        ratesUpdater = new RatesUpdater(ICurrencyRepository, ratesRepository, rateSourceRepository, rateSourceFactory, scheduledExecutorService, currencyFactory, ratesUpdaterProperties);
+        ratesUpdater = new RatesUpdater(CurrencyRepository, ratesRepository, rateSourceRepository, rateSourceFactory, scheduledExecutorService, currencyFactory, ratesUpdaterProperties);
     }
 
     @Test
     public void testRun() throws Exception {
         ratesUpdater.run();
 
-        verify(ICurrencyRepository, times(6)).findByName(any());
-        verify(ICurrencyRepository, times(2)).save(any(Currency.class));
+        verify(CurrencyRepository, times(6)).findByName(any());
+        verify(CurrencyRepository, times(2)).save(any(Currency.class));
         verify(currencyFactory, times(2)).create();
 
         verify(rateSourceRepository, times(1)).findByName(any());
@@ -73,7 +73,7 @@ public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
 
     private void prepareMocks() {
 
-        ICurrencyRepository = Mockito.mock(ICurrencyRepository.class);
+        CurrencyRepository = Mockito.mock(CurrencyRepository.class);
         ratesRepository = Mockito.mock(RatesRepository.class);
         rateSourceRepository = Mockito.mock(RateSourceRepository.class);
 
@@ -95,7 +95,7 @@ public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
         when(currencyFactory.create()).thenCallRealMethod();
         when(rateSourceFactory.create()).thenCallRealMethod();
 
-        when(ICurrencyRepository.findByName(any()))
+        when(CurrencyRepository.findByName(any()))
                 .thenReturn(new Currency())
                 .thenReturn(null)
                 .thenReturn(null)
