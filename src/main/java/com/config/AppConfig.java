@@ -1,10 +1,11 @@
 package com.config;
 
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.vendor.HibernateJpaSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.text.SimpleDateFormat;
@@ -16,7 +17,6 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.dao.repositories")
 public class AppConfig {
 
     //excutor for rates updater
@@ -36,4 +36,8 @@ public class AppConfig {
         return new SimpleDateFormat("yyyy-dd-MM");
     }
 
+    @Bean
+    public HibernateJpaSessionFactoryBean sessionFactory() {
+        return new HibernateJpaSessionFactoryBean();
+    }
 }

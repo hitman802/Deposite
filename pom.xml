@@ -43,13 +43,6 @@
         </dependency>
         <!-- basic spring boot dependencies -->
 
-        <!-- for registration page
-        https://hellokoding.com/registration-and-login-example-with-spring-security-spring-boot-spring-data-jpa-hsql-jsp/
-        -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -63,13 +56,6 @@
             <version>${spring-version}</version>
         </dependency>
 
-        <!-- for AbstractEntityManagerFactoryBean -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-            <version>${spring-version}</version>
-        </dependency>
-
         <!-- POSTGRES driver-->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -77,6 +63,18 @@
             <version>42.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>1.5.6.RELEASE</version>
+        </dependency>
+
+        <!-- more info about queries to db-->
+        <dependency>
+            <groupId>p6spy</groupId>
+            <artifactId>p6spy</artifactId>
+            <version>2.2.0</version>
+        </dependency>
 
         <!-- lombok -->
         <dependency>
@@ -86,32 +84,22 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--  hibernate
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate-version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        need or not???
-         -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- SQL dialect -->
-        <!-- org.hibernate.dialect.MySQLDialect in hibernate.cfg.xml-->
-        <!-- com.mysql.jdbc.Driver in hibernate.cfg.xml-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.6</version>
         </dependency>
-
-        <!-- for JPA, use hibernate-entitymanager instead of hibernate-core
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>${hibernate-version}</version>
-        </dependency>
-        need or not???
-        -->
 
         <!-- for request sending -->
         <dependency>
@@ -198,7 +186,36 @@
             <artifactId>powermock-module-testng</artifactId>
             <version>1.6.5</version>
         </dependency>
+        <!-- in memmory db for tests-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- in memmory db for tests-->
+
         <!-- for unit tests -->
+
+        <!-- for @DatabaseSetup working - loading db data from xml-->
+        <dependency>
+            <groupId>com.github.springtestdbunit</groupId>
+            <artifactId>spring-test-dbunit</artifactId>
+            <version>1.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.dbunit</groupId>
+            <artifactId>dbunit</artifactId>
+            <version>2.5.1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Logging required by spring-test-dbunit -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- for @DatabaseSetup working - loading db data from xml-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

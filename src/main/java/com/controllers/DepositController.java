@@ -1,10 +1,8 @@
 package com.controllers;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.dao.entities.Deposite;
 import com.dao.entities.Users;
-import com.dao.repositories.CurrencyRepository;
+import com.dao.repositories.ICurrencyRepository;
 import com.dao.repositories.DepositeRepository;
 import com.dao.repositories.UserRepository;
 import com.deposit.DepositCalculator;
@@ -12,6 +10,8 @@ import com.exceptions.DepositNotFoundException;
 import com.exceptions.OperationNotAllowedException;
 import com.exceptions.UserNotFoundException;
 import com.factory.DepositeFactory;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
@@ -35,13 +35,13 @@ import java.util.stream.Collectors;
 public class DepositController {
 
     private UserRepository userRepository;
-    private CurrencyRepository currencyRepository;
+    private ICurrencyRepository currencyRepository;
     private DepositeRepository depositeRepository;
     private SimpleDateFormat simpleDateFormat;
     private DepositeFactory depositeFactory;
     private DepositCalculator depositCalculator;
 
-    public DepositController(UserRepository userRepository, CurrencyRepository currencyRepository,
+    public DepositController(UserRepository userRepository, ICurrencyRepository currencyRepository,
                              DepositeRepository depositeRepository, @Qualifier("deposit") SimpleDateFormat simpleDateFormat, DepositeFactory depositeFactory, DepositCalculator depositCalculator) {
         this.userRepository = userRepository;
         this.currencyRepository = currencyRepository;

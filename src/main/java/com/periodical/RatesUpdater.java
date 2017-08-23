@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.dao.entities.Currency;
 import com.dao.entities.Rate;
 import com.dao.entities.RateSource;
-import com.dao.repositories.CurrencyRepository;
+import com.dao.repositories.ICurrencyRepository;
 import com.dao.repositories.RateSourceRepository;
 import com.dao.repositories.RatesRepository;
 import com.factory.CurrencyFactory;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class RatesUpdater implements Runnable {
 
-    private final CurrencyRepository currencyRepository;
+    private final ICurrencyRepository ICurrencyRepository;
     private final RatesRepository ratesRepository;
     private final RateSourceRepository rateSourceRepository;
     private final RateSourceFactory rateSourceFactory;
@@ -88,7 +88,7 @@ public class RatesUpdater implements Runnable {
 
     private void checkAndUpdateCurrencies(List<Rate> rates) {
         rates.stream().parallel()
-                .filter(rate -> currencyRepository.findByName(rate.getName()) == null)
+                .filter(rate -> ICurrencyRepository.findByName(rate.getName()) == null)
                 .forEach(saveCurrency());
     }
 
@@ -125,7 +125,7 @@ public class RatesUpdater implements Runnable {
     private Consumer<Rate> saveRate(Date date, RateSource rateSource) {
         return rate -> {
             String currencyName = rate.getName();
-            Currency currency = currencyRepository.findByName(currencyName);
+            Currency currency = ICurrencyRepository.findByName(currencyName);
             if( currency == null ) {
                 log.error("Cant find currency in db " + currencyName);
                 return;
@@ -142,7 +142,7 @@ public class RatesUpdater implements Runnable {
         return rate -> {
             Currency currency = currencyFactory.create();
             currency.setName(rate.getName());
-            currencyRepository.save(currency);
+            ICurrencyRepository.save(currency);
         };
     }
 

@@ -1,0 +1,5 @@
+<dataset>
+    <Currency currency_id="1" currency_name="UAH"/>
+    <Currency currency_id="2" currency_name="USD"/>
+    <Currency currency_id="3" currency_name="RUB"/>
+</dataset>
