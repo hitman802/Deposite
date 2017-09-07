@@ -1,8 +1,8 @@
 package com.dao.entities;
 
+import com.deposit.DepositOperation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.deposit.DepositOperation;
 import lombok.Getter;
 import lombok.Setter;
 

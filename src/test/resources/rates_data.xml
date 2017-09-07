@@ -1,0 +1,8 @@
+<dataset>
+    <Currency currency_id="1" currency_name="UAH"/>
+    <Currency currency_id="2" currency_name="USD"/>
+    <Currency currency_id="3" currency_name="RUB"/>
+
+    <Rate rate_date="2017-03-27" rate_currency="2" rate_rate="0.9"/>
+    <Rate rate_date="2017-03-28" rate_currency="1" rate_rate="0.8"/>
+</dataset>

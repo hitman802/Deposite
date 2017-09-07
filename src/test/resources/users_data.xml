@@ -1,0 +1,5 @@
+<dataset>
+    <Users users_id="1" users_name="sergeyg" users_password="sergeyg" users_email="sergeyg@fakemail.com"/>
+    <Users users_id="2" users_name="sergeygg" users_password="sergeygg" users_email="sergeygg@fakemail.com"/>
+    <Users users_id="3" users_name="sergeyggg" users_password="sergeyggg" users_email="sergeyggg@fakemail.com"/>
+</dataset>

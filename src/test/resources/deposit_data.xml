@@ -1,0 +1,11 @@
+<dataset>
+    <Users users_id="1" users_name="sergeyg" users_password="sergeyg" users_email="sergeyg@fakemail.com"/>
+    <Users users_id="2" users_name="sergeygg" users_password="sergeygg" users_email="sergeygg@fakemail.com"/>
+    <Users users_id="3" users_name="sergeyggg" users_password="sergeyggg" users_email="sergeyggg@fakemail.com"/>
+    <Users users_id="4" users_name="sergeygggg" users_password="sergeygggg" users_email="sergeygggg@fakemail.com"/>
+
+    <Deposite deposite_id="1" deposite_name="deposit1" deposite_sum="100000" deposite_user="1" deposite_rate="16.8" deposite_tax_on_percent="17.5"/>
+    <Deposite deposite_id="2" deposite_name="deposit2" deposite_sum="100000" deposite_user="2" deposite_rate="16.8" deposite_tax_on_percent="17.5"/>
+    <Deposite deposite_id="3" deposite_name="deposit3" deposite_sum="100000" deposite_user="3" deposite_rate="16.8" deposite_tax_on_percent="17.5"/>
+    <Deposite deposite_id="4" deposite_name="deposit4" deposite_sum="100000" deposite_user="4" deposite_rate="16.8" deposite_tax_on_percent="17.5"/>
+</dataset>

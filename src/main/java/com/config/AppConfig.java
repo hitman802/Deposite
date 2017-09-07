@@ -1,11 +1,9 @@
 package com.config;
 
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.vendor.HibernateJpaSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -19,7 +17,6 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories
 public class AppConfig {
 
     //excutor for rates updater

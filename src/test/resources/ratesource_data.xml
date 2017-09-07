@@ -1,0 +1,4 @@
+<dataset>
+    <RateSource ratesource_id="1" ratesource_name="NBY"/>
+    <RateSource ratesource_id="2" ratesource_name="MEGBANK"/>
+</dataset>
