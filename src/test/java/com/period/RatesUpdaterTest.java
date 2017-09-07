@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
 
     private RatesUpdater ratesUpdater;
-    private CurrencyRepository CurrencyRepository;
+    private CurrencyRepository currencyRepository;
     private RatesRepository ratesRepository;
     private RateSourceRepository rateSourceRepository;
     private RateSourceFactory rateSourceFactory;
@@ -52,15 +52,15 @@ public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
     @BeforeMethod
     public void setUp() throws Exception {
         prepareMocks();
-        ratesUpdater = new RatesUpdater(CurrencyRepository, ratesRepository, rateSourceRepository, rateSourceFactory, scheduledExecutorService, currencyFactory, ratesUpdaterProperties);
+        ratesUpdater = new RatesUpdater(currencyRepository, ratesRepository, rateSourceRepository, rateSourceFactory, scheduledExecutorService, currencyFactory, ratesUpdaterProperties);
     }
 
     @Test
     public void testRun() throws Exception {
         ratesUpdater.run();
 
-        verify(CurrencyRepository, times(6)).findByName(any());
-        verify(CurrencyRepository, times(2)).save(any(Currency.class));
+        verify(currencyRepository, times(6)).findByName(any());
+        verify(currencyRepository, times(2)).save(any(Currency.class));
         verify(currencyFactory, times(2)).create();
 
         verify(rateSourceRepository, times(1)).findByName(any());
@@ -73,7 +73,7 @@ public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
 
     private void prepareMocks() {
 
-        CurrencyRepository = Mockito.mock(CurrencyRepository.class);
+        currencyRepository = Mockito.mock(CurrencyRepository.class);
         ratesRepository = Mockito.mock(RatesRepository.class);
         rateSourceRepository = Mockito.mock(RateSourceRepository.class);
 
@@ -95,12 +95,10 @@ public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
         when(currencyFactory.create()).thenCallRealMethod();
         when(rateSourceFactory.create()).thenCallRealMethod();
 
-        when(CurrencyRepository.findByName(any()))
+        when(currencyRepository.findByName(any()))
                 .thenReturn(new Currency())
                 .thenReturn(null)
                 .thenReturn(null)
                 .thenReturn(new Currency());
     }
-
-
 }
