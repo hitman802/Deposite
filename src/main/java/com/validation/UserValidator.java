@@ -12,16 +12,22 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import com.service.UserServiceImpl;
 
+import java.util.Optional;
+
 /**
  * Created by Admin on 30.04.2017.
  */
 @Component
 public class UserValidator implements Validator {
 
+    private final UserServiceImpl userService;
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserServiceImpl userService;
-    @Autowired
-    private UserRepository userRepository;
+    public UserValidator(UserServiceImpl userService, UserRepository userRepository) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public boolean supports(Class<?> aClass) {
@@ -50,11 +56,13 @@ public class UserValidator implements Validator {
         }
     }
 
+    @Transactional
     public void validateUserNameAndEmail(String name, String email) {
         validateUserName(name);
         validateUserEmail(email);
     }
 
+    @Transactional
     public void validateUserNameAndEmail(Long id, String name, String email) {
         validateUserName(id, name);
         validateUserEmail(id, email);
@@ -66,7 +74,7 @@ public class UserValidator implements Validator {
      * @param email - user name to check
      */
     private void validateUserEmail(String email){
-        if( userRepository.findByName(email) != null ) {
+        if( userRepository.findByEmail(email) != null ) {
             throw new UniqueUserEmailException();
         }
     }
@@ -75,7 +83,6 @@ public class UserValidator implements Validator {
      * throws runtime exception in case if username not unique
      * @param name - user name to check
      */
-    @Transactional
     private void validateUserName(String name){
         if( userRepository.findByName(name) != null ) {
             throw new UniqueUserNameException();
@@ -87,7 +94,6 @@ public class UserValidator implements Validator {
      * @param id - user id
      * @param name - user name to check
      */
-    @Transactional
     private void validateUserName(Long id, String name){
         if( userRepository.findByNameAndIdNot(name, id) != null ) {
             throw new UniqueUserNameException();
@@ -99,7 +105,6 @@ public class UserValidator implements Validator {
      * @param id - user id
      * @param email - user email to check
      */
-    @Transactional
     private void validateUserEmail(Long id, String email){
         if( userRepository.findByEmailAndIdNot(email, id) != null ) {
             throw new UniqueUserEmailException();

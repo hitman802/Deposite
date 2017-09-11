@@ -17,10 +17,14 @@ import org.springframework.stereotype.Service;
 @Log4j
 public class SecurityServiceImpl implements ISecurityService {
 
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+
     @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public SecurityServiceImpl(AuthenticationManager authenticationManager, UserDetailsService userDetailsService) {
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     public String findLoggedInUsername() {

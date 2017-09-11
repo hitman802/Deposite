@@ -16,7 +16,8 @@ import java.util.UUID;
 @DatabaseSetup("/users_data.xml")
 public class UsersRepositoryDataJPATest extends BaseDataJPATest<Users, Long> {
 
-    private long id = 1L;
+    final private long id = 1L;
+    final String email = "sergeyg@fakemail.com";
 
     @Autowired
     private UserRepository repository;
@@ -36,8 +37,13 @@ public class UsersRepositoryDataJPATest extends BaseDataJPATest<Users, Long> {
     }
 
     @Test
+    public void testFindByEmail() {
+        Assert.assertNotNull(repository.findByEmail(email));
+        Assert.assertNull(repository.findByEmail("unexisting mail"));
+    }
+
+    @Test
     public void testFindByEmailAndIdNot() {
-        String email = "sergeyg@fakemail.com";
         Assert.assertNull(repository.findByEmailAndIdNot(email, id));
         String email2 = "sergeygg@fakemail.com";
         Assert.assertNotNull(repository.findByEmailAndIdNot(email2, id));

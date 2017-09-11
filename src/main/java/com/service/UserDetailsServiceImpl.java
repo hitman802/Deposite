@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Admin on 26.04.2017.
@@ -22,8 +22,12 @@ import java.util.Set;
 @Component("UserDetailsServiceImpl")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserDetailsServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -33,8 +37,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             log.error("Cant load user by name " + name);
             throw new UsernameNotFoundException("Cant load user by name " + name);
         }
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        user.getRoles().forEach(role -> grantedAuthorities.add(new SimpleGrantedAuthority(role.getName())));
+
+        Set<GrantedAuthority> grantedAuthorities =
+            user.getRoles()
+                .stream()
+                .map(role->new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toSet())
+        ;
         return new org.springframework.security.core.
                 userdetails.User(user.getName(), user.getPassword(), grantedAuthorities);
     }

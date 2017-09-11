@@ -14,7 +14,7 @@ public class SQLFormatter implements MessageFormattingStrategy {
     @Override
     public String formatMessage(int connectionId, String now, long elapsed, String category, String prepared, String sql) {
         if (sql.isEmpty()) {
-            return "";
+            return sql;
         }
         String batch = "batch".equals(category) ? " add to batch " : "";
         return String.format("Hibernate: %s %s {elapsed: %dms}", batch, HIBERNATE_SQL_FORMATTER.format(sql), elapsed);

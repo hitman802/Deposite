@@ -16,8 +16,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Admin on 12.08.2017.
@@ -58,45 +59,42 @@ public abstract class BaseDataJPATest<T, ID extends Serializable> extends Abstra
         collectionSize = getCollectionSize();
     }
 
-    private List<T> iterableToArrayList(Iterable<T> iterable) {
-        List<T> list = new ArrayList<>();
-        for (T anIterable : iterable) {
-            list.add(anIterable);
-        }
-        return list;
+    private List<T> iterableToList(Iterable<T> iterable) {
+        return StreamSupport.stream(
+                iterable.spliterator(), false).collect(Collectors.toList());
     }
 
     //basic crud operations test
     @Test
     public void testFindAll() {
-        Assert.assertEquals(iterableToArrayList(repository.findAll()).size(), collectionSize);
+        Assert.assertEquals(iterableToList(repository.findAll()).size(), collectionSize);
     }
 
     @Test
     public void testSave() {
         T entity = createNewEntity();
-        Assert.assertEquals(iterableToArrayList(repository.findAll()).size(), collectionSize);
+        Assert.assertEquals(iterableToList(repository.findAll()).size(), collectionSize);
         repository.save(entity);
-        List<T> entities = iterableToArrayList(repository.findAll());
+        List<T> entities = iterableToList(repository.findAll());
         Assert.assertEquals(entities.size(), collectionSize+1);
         Assert.assertTrue(entities.contains(entity));
     }
 
     @Test
     public void testDelete() {
-        List<T> entities = iterableToArrayList(repository.findAll());
+        List<T> entities = iterableToList(repository.findAll());
         Assert.assertEquals(entities.size(), collectionSize);
         T entity = entities.get(0);
         Assert.assertNotNull(entity);
         repository.delete(entity);
-        Assert.assertEquals(iterableToArrayList(repository.findAll()).size(), collectionSize-1);
+        Assert.assertEquals(iterableToList(repository.findAll()).size(), collectionSize-1);
     }
 
     @Test
     public void testDeleteAll() {
-        Assert.assertEquals(iterableToArrayList(repository.findAll()).size(), collectionSize);
+        Assert.assertEquals(iterableToList(repository.findAll()).size(), collectionSize);
         repository.deleteAll();
-        Assert.assertTrue(iterableToArrayList(repository.findAll()).isEmpty());
+        Assert.assertTrue(iterableToList(repository.findAll()).isEmpty());
     }
     //basic crud operations test
 }

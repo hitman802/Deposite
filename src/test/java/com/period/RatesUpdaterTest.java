@@ -1,5 +1,8 @@
 package com.period;
 
+import com.BaseUnitTest;
+import com.config.properties.RateConfig;
+import com.config.properties.RatesUpdaterProperties;
 import com.dao.entities.Currency;
 import com.dao.entities.Rate;
 import com.dao.entities.RateSource;
@@ -8,18 +11,12 @@ import com.dao.repositories.RateSourceRepository;
 import com.dao.repositories.RatesRepository;
 import com.factory.CurrencyFactory;
 import com.factory.RateSourceFactory;
-import com.config.properties.RateConfig;
-import com.config.properties.RatesUpdaterProperties;
+import com.periodical.RatesUpdater;
+import com.utils.RequestUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.IObjectFactory;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
-import com.periodical.RatesUpdater;
-import com.utils.RequestUtils;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -30,30 +27,14 @@ import static org.mockito.Mockito.*;
  * Created by sergeyg on 13.07.17.
  */
 @PrepareForTest(RequestUtils.class)
-public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
+public class RatesUpdaterTest extends BaseUnitTest {
 
     private RatesUpdater ratesUpdater;
     private CurrencyRepository currencyRepository;
     private RatesRepository ratesRepository;
     private RateSourceRepository rateSourceRepository;
     private RateSourceFactory rateSourceFactory;
-    private ScheduledExecutorService scheduledExecutorService;
     private CurrencyFactory currencyFactory;
-    private RatesUpdaterProperties ratesUpdaterProperties;
-
-    /*
-    * for power mock working
-    */
-    @ObjectFactory
-    public IObjectFactory getObjectFactory() {
-        return new org.powermock.modules.testng.PowerMockObjectFactory();
-    }
-
-    @BeforeMethod
-    public void setUp() throws Exception {
-        prepareMocks();
-        ratesUpdater = new RatesUpdater(currencyRepository, ratesRepository, rateSourceRepository, rateSourceFactory, scheduledExecutorService, currencyFactory, ratesUpdaterProperties);
-    }
 
     @Test
     public void testRun() throws Exception {
@@ -71,17 +52,21 @@ public class RatesUpdaterTest extends AbstractTestNGSpringContextTests {
         verify(ratesRepository, times(3)).save(any(Rate.class));
     }
 
-    private void prepareMocks() {
+    @Override
+    public void prepareMocks() {
 
         currencyRepository = Mockito.mock(CurrencyRepository.class);
         ratesRepository = Mockito.mock(RatesRepository.class);
         rateSourceRepository = Mockito.mock(RateSourceRepository.class);
 
-        scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
+        ScheduledExecutorService scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
         rateSourceFactory = Mockito.mock(RateSourceFactory.class);
         currencyFactory = Mockito.mock(CurrencyFactory.class);
-        ratesUpdaterProperties = Mockito.mock(RatesUpdaterProperties.class);
+        RatesUpdaterProperties ratesUpdaterProperties = Mockito.mock(RatesUpdaterProperties.class);
         PowerMockito.mockStatic(RequestUtils.class);
+
+        ratesUpdater = new RatesUpdater(currencyRepository, ratesRepository,
+                rateSourceRepository, rateSourceFactory, scheduledExecutorService, currencyFactory, ratesUpdaterProperties);
 
         RateConfig mockRateConfig = new RateConfig();
         mockRateConfig.setName("NBY");
