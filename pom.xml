@@ -216,11 +216,13 @@
             <scope>test</scope>
         </dependency>
         <!-- Logging required by spring-test-dbunit -->
+        <!--
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
+        -->
         <!-- for @DatabaseSetup working - loading db data from xml-->
 
         <dependency>
