@@ -2,6 +2,7 @@ package com.dao.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.Set;
 /**
  * Created by Admin on 26.04.2017.
  */
+@ToString
 @Entity
 @Table(name = "Role")
 public class Role {

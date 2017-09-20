@@ -3,10 +3,10 @@ package com.service;
 import com.dao.entities.Users;
 import com.dao.repositories.RoleRepository;
 import com.dao.repositories.UserRepository;
+import com.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.service.interfaces.IUserService;
 
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;

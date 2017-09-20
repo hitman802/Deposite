@@ -4,15 +4,13 @@ import com.dao.entities.Users;
 import com.dao.repositories.UserRepository;
 import com.exceptions.UniqueUserEmailException;
 import com.exceptions.UniqueUserNameException;
+import com.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import com.service.UserServiceImpl;
-
-import java.util.Optional;
 
 /**
  * Created by Admin on 30.04.2017.

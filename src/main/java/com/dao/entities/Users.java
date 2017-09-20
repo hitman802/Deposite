@@ -1,7 +1,9 @@
 package com.dao.entities;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
@@ -10,6 +12,8 @@ import java.util.Set;
 /**
  * Created by Admin on 22.04.2017.
  */
+@ToString
+@EqualsAndHashCode
 @Entity
 @Table(name = "Users")
 public class Users {
@@ -34,11 +38,11 @@ public class Users {
     @Transient
     @Setter @Getter private String passwordConfirm;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     @Getter @Setter private Set<Deposite> deposits;
 
     //3rd table for many to many relation
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "usersrole",
         joinColumns = @JoinColumn(name = "usersrole_user"),
         inverseJoinColumns = @JoinColumn(name = "usersrole_role")

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -40,9 +41,10 @@ public class Deposite {
 
     @OneToOne
     @JoinColumn(name = "deposite_currency", referencedColumnName = "currency_id")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @Setter @Getter private Currency currency;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "deposite")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "deposite")
     @Setter @Getter private List<Replenishment> replenishments;
 
     @Column(name = "deposite_tax_on_percent")
@@ -52,7 +54,7 @@ public class Deposite {
     @Getter @Setter double depositeRate;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deposite_user", referencedColumnName = "users_id")
     @Getter @Setter Users user;
 
@@ -61,4 +63,22 @@ public class Deposite {
 
     @Transient
     @Getter @Setter private Double finalSum;
+
+    @Override
+    public String toString() {
+        return "Deposite{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", sum=" + sum +
+                ", currency=" + currency +
+                ", replenishments=" + replenishments +
+                ", taxOnPercents=" + taxOnPercents +
+                ", depositeRate=" + depositeRate +
+                ", user=" + user.getName() +
+                ", depositOperations=" + depositOperations +
+                ", finalSum=" + finalSum +
+                '}';
+    }
 }
